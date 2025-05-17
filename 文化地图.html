@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>《燕赵冀》APP 文化地图界面设计图</title>
+    <style>
+
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            background: white;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.2s;
+        }
+
+        .nav-name {
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .nav-item.active  {
+            color: #9d2933;
+        }
+
+        .nav-item:not(.active) {
+            color: #999;
+        }
+
+        .nav-item:not(.active):hover {
+            color: #666;
+        }
+
+        .nav-item:hover .nav-icon {
+            transform: scale(1.1);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background-color: #f8f8f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .title {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .frame {
+            position: relative;
+            width: 100%;
+            background-color: white;
+            border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            aspect-ratio: 9/16;
+        }
+
+        .phone-frame {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .map-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background-color: #f0f7f4;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .status-bar {
+            height: 44px;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .status-bar .time {
+            font-weight: bold;
+        }
+
+        .status-bar .icons {
+            display: flex;
+            gap: 4px;
+        }
+
+        .search-bar {
+            margin: 10px 16px;
+            height: 44px;
+            background-color: white;
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-bar input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            margin-left: 8px;
+            color: #333;
+        }
+
+        .map {
+            flex: 1;
+            position: relative;
+            /*background-image: url('path/to/map-image.jpg'); !* 替换为实际地图图片路径 *!*/
+            background-size: cover;
+            background-position: center;
+        }
+
+        .map-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(62, 125, 107, 0.1);
+        }
+
+        .location-markers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .marker {
+            position: absolute;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 18px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            border: 2px solid white;
+            z-index: 2;
+        }
+
+        .marker.historical {
+            background-color: #C83932;
+        }
+
+        .marker.museum {
+            background-color: #4A90E2;
+        }
+
+        .marker.cultural {
+            background-color: #F2C94C;
+        }
+
+        .marker.default {
+            background-color: #3E7D6B;
+        }
+
+        .info-card {
+            position: absolute;
+            bottom: 90px;
+            left: 16px;
+            right: 16px;
+            background-color: white;
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            z-index: 3;
+        }
+
+        .info-card .title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        .info-card .subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .info-card .content {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .info-card .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .info-card .actions button {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .info-card .actions .primary {
+            background-color: #3E7D6B;
+            color: white;
+        }
+
+        .info-card .actions .secondary {
+            background-color: rgba(62, 125, 107, 0.1);
+            color: #3E7D6B;
+        }
+
+        .bottom-nav {
+            height: 74px;
+            background-color: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 10px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            z-index: 4;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-item .icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+        }
+
+        .nav-item .label {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .nav-item.active .icon {
+            color: #3E7D6B;
+        }
+
+        .nav-item.active .label {
+            color: #3E7D6B;
+            font-weight: 500;
+        }
+
+        .layers-button {
+            position: absolute;
+            right: 16px;
+            bottom: 170px;
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 3;
+        }
+
+        .layers-icon {
+            font-size: 24px;
+            color: #3E7D6B;
+        }
+
+        .map-layers {
+            position: absolute;
+            right: 75px;
+            bottom: 170px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            z-index: 3;
+        }
+
+        .layer-item {
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .layer-item:last-child {
+            border-bottom: none;
+        }
+
+        .layer-item .color {
+            width: 12px;
+            height: 12px;
+            border-radius: 6px;
+        }
+
+        .layer-item .text {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .layer-item .color.historical {
+            background-color: #C83932;
+        }
+
+        .layer-item .color.museum {
+            background-color: #4A90E2;
+        }
+
+        .layer-item .color.cultural {
+            background-color: #F2C94C;
+        }
+
+        .layer-item .color.ancient {
+            background-color: #60997B;
+        }
+
+        .custom-border {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 12px solid transparent;
+            border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath d='M0,0 L100,0 L100,100 L0,100 L0,0 Z' fill='none' stroke='%233E7D6B' stroke-width='4' stroke-dasharray='10,5' /%3E%3C/svg%3E") 1;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .location-button {
+            position: absolute;
+            right: 16px;
+            bottom: 230px;
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 3;
+        }
+
+        .location-icon {
+            font-size: 24px;
+            color: #3E7D6B;
+        }
+
+        .map-decoration {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            opacity: 0.7;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .map-decoration img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="frame">
+        <div class="phone-frame">
+            <div class="map-container">
+                <div class="status-bar">
+                    <div class="time">9:41</div>
+                    <div class="icons">
+                        <div class="signal">📶</div>
+                        <div class="wifi">📡</div>
+                        <div class="battery">🔋</div>
+                    </div>
+                </div>
+
+                <div class="search-bar">
+                    <div>🔍</div>
+                    <input type="text" placeholder="搜索文化地点、历史遗址、民俗村落...">
+                </div>
+
+                <div class="map">
+                    <div class="map-overlay"></div>
+                    <div class="map-decoration">
+<!--                        <img src="path/to/decoration-image.jpg" alt="古地图装饰"> &lt;!&ndash; 替换为实际装饰图片路径 &ndash;&gt;-->
+                    </div>
+
+                    <div class="location-markers">
+                        <div class="marker historical" style="top: 35%; left: 30%;">🏛️</div>
+                        <div class="marker museum" style="top: 45%; left: 55%;">🏮</div>
+                        <div class="marker cultural" style="top: 60%; left: 35%;">🎭</div>
+                        <div class="marker default" style="top: 30%; left: 70%;">📍</div>
+                        <div class="marker historical" style="top: 50%; left: 20%;">🏯</div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="title">丛台公园 (赵王宫遗址)</div>
+                        <div class="subtitle">历史遗迹 · 距离2.3公里</div>
+                        <div class="content">丛台，是战国时期赵国国都邯郸的著名建筑。相传为赵武灵王所建，作为观赏台，也是赵王接见宾客之处。现为国家重点文物保护单位。</div>
+                        <div class="actions">
+                            <button class="secondary">查看详情</button>
+                            <button class="primary" onclick="switchTab('地图')">导航前往</button>
+                        </div>
+                    </div>
+
+                    <div class="location-button">
+                        <div class="location-icon">📍</div>
+                    </div>
+
+                    <div class="layers-button">
+                        <div class="layers-icon">⊟</div>
+                    </div>
+
+                    <div class="map-layers">
+                        <div class="layer-item">
+                            <div class="color historical"></div>
+                            <div class="text">历史遗迹</div>
+                        </div>
+                        <div class="layer-item">
+                            <div class="color museum"></div>
+                            <div class="text">博物馆</div>
+                        </div>
+                        <div class="layer-item">
+                            <div class="color cultural"></div>
+                            <div class="text">非遗基地</div>
+                        </div>
+                        <div class="layer-item">
+                            <div class="color ancient"></div>
+                            <div class="text">赵国历史</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 底部导航 -->
+                <div class="bottom-nav">
+                    <div class="nav-item" onclick="switchTab('首页')">
+                        <div class="nav-icon">🏠</div>
+                        <div class="nav-name">首页</div>
+                    </div>
+                    <div class="nav-item active" onclick="switchTab('景点')">
+                        <div class="nav-icon">🗿</div>
+                        <div class="nav-name">景点</div>
+                    </div>
+                    <div class="nav-item" onclick="switchTab('文化')">
+                        <div class="nav-icon">📚</div>
+                        <div class="nav-name">文化</div>
+                    </div>
+                    <div class="nav-item" onclick="switchTab('文创商城')">
+                        <div class="nav-icon">📱</div>
+                        <div class="nav-name">商场</div>
+                    </div>
+                    <div class="nav-item" onclick="switchTab('行程')">
+                        <div class="nav-icon">🗺️</div>
+                        <div class="nav-name">行程</div>
+                    </div>
+                    <div class="nav-item" onclick="switchTab('我的')">
+                        <div class="nav-icon">👤</div>
+                        <div class="nav-name">我的</div>
+                    </div>
+                </div>
+
+                <div class="custom-border"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function switchTab(tab) {
+        window.location.href = tab + '.html';
+    }
+
+    // 页面加载时自动高亮当前页面对应的导航项
+    document.addEventListener('DOMContentLoaded', () => {
+        const currentPage = window.location.pathname.split('/').pop().split('.')[0]; // 获取当前文件名（不含后缀）
+        const navItems = document.querySelectorAll('.nav-item');
+
+        navItems.forEach(item => {
+            const tab = item.getAttribute('onclick')?.match(/'(.+?)'/)?.[1];
+
+            if (tab === currentPage) {
+                item.classList.add('active');
+            }
+
+            item.addEventListener('click', () => {
+                navItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+    });
+</script>
+</body>
+</html>

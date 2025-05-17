@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>《燕赵冀》APP 文化地图界面</title>
+    <style>
+
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            background: white;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.2s;
+        }
+
+        .nav-name {
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .nav-item.active  {
+            color: #9d2933;
+        }
+
+        .nav-item:not(.active) {
+            color: #999;
+        }
+
+        .nav-item:not(.active):hover {
+            color: #666;
+        }
+
+        .nav-item:hover .nav-icon {
+            transform: scale(1.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background-color: #f8f8f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .title {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .frame {
+            position: relative;
+            width: 100%;
+            background-color: white;
+            border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            aspect-ratio: 16/9;
+        }
+
+        .phone-frame {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 100%;
+            width: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .map-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background-color: #f0f7f4;
+        }
+
+        .status-bar {
+            height: 44px;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(5px);
+        }
+
+        .status-bar .time {
+            font-weight: bold;
+        }
+
+        .status-bar .icons {
+            display: flex;
+            gap: 4px;
+        }
+
+        .search-bar {
+            position: absolute;
+            top: 60px;
+            left: 16px;
+            right: 16px;
+            height: 44px;
+            background-color: white;
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .search-bar:focus-within {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .search-bar input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            margin-left: 8px;
+            color: #333;
+        }
+
+        .map {
+            width: 100%;
+            height: 100%;
+            background-image: url('https://pic3.zhimg.com/v2-5a9e8f8e3e5c1e3d3e5f3e5d3e5f3e5d_r.jpg');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .map-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://pic3.zhimg.com/v2-5a9e8f8e3e5c1e3d3e5f3e5d3e5f3e5d_r.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.8;
+        }
+
+        .location-markers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .marker {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: #3E7D6B;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            border: 2px solid white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 5;
+        }
+
+        .marker:hover {
+            transform: translate(-50%, -50%) scale(1.2);
+            z-index: 10;
+        }
+
+        .marker.historical  {
+            background-color: #C83932;
+        }
+
+        .marker.museum  {
+            background-color: #4A90E2;
+        }
+
+        .marker.cultural  {
+            background-color: #F2C94C;
+        }
+
+        .marker.active  {
+            animation: pulse 1.5s infinite;
+            transform: translate(-50%, -50%) scale(1.2);
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(200, 57, 50, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(200, 57, 50, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(200, 57, 50, 0);
+            }
+        }
+
+        .info-card {
+            position: absolute;
+            bottom: 90px;
+            left: 20px;
+            right: 20px;
+            background-color: white;
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .info-card.visible  {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .info-card .title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        .info-card .subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .info-card .content {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .info-card.expanded  .content {
+            -webkit-line-clamp: unset;
+        }
+
+        .info-card .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .info-card .actions button {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .info-card .actions button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-card .actions .primary {
+            background-color: #3E7D6B;
+            color: white;
+        }
+
+        .info-card .actions .primary:hover {
+            background-color: #2e5d4f;
+        }
+
+        .info-card .actions .secondary {
+            background-color: rgba(62, 125, 107, 0.1);
+            color: #3E7D6B;
+        }
+
+        .info-card .actions .secondary:hover {
+            background-color: rgba(62, 125, 107, 0.2);
+        }
+
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 74px;
+            background-color: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 10px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            z-index: 10;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .nav-item .icon {
+            width: 24px;
+            height: 24px;
+            background-color: #ddd;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item .label {
+            font-size: 12px;
+            color: #999;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item.active  .icon {
+            background-color: #3E7D6B;
+            color: white;
+            transform: translateY(-5px);
+        }
+
+        .nav-item.active  .label {
+            color: #3E7D6B;
+            font-weight: 500;
+        }
+
+        .layers-button {
+            position: absolute;
+            right: 16px;
+            bottom: 170px;
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .layers-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .layers-icon {
+            width: 24px;
+            height: 24px;
+            background-color: #3E7D6B;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'  viewBox='0 0 24 24'%3E%3Cpath d='M12 16.54l7.37-5.73L12 5.99 4.63 10.81z'/%3E%3C/svg%3E");
+            mask-size: cover;
+            transition: all 0.2s ease;
+        }
+
+        .layers-button:hover .layers-icon {
+            background-color: #2e5d4f;
+        }
+
+        .map-layers {
+            position: absolute;
+            right: 75px;
+            bottom: 170px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transform: translateX(20px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .map-layers.visible  {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .layer-item {
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .layer-item:hover {
+            background-color: #f8f8f8;
+        }
+
+        .layer-item:last-child {
+            border-bottom: none;
+        }
+
+        .layer-item .color {
+            width: 12px;
+            height: 12px;
+            border-radius: 6px;
+        }
+
+        .layer-item .text {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .layer-item .color.historical  {
+            background-color: #C83932;
+        }
+
+        .layer-item .color.museum  {
+            background-color: #4A90E2;
+        }
+
+        .layer-item .color.cultural  {
+            background-color: #F2C94C;
+        }
+
+        .layer-item .color.ancient  {
+            background-color: #60997B;
+        }
+
+        .layer-item.active  .text {
+            font-weight: 500;
+            color: #3E7D6B;
+        }
+
+        /* 实时时间更新 */
+        #current-time {
+            font-weight: 500;
+        }
+
+        /* 地图缩放控制 */
+        .zoom-controls {
+            position: absolute;
+            right: 16px;
+            bottom: 230px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .zoom-button {
+            width: 40px;
+            height: 40px;
+            background-color: white;
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .zoom-button:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* 当前定位按钮 */
+        .location-button {
+            position: absolute;
+            right: 16px;
+            bottom: 290px;
+            width: 40px;
+            height: 40px;
+            background-color: white;
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+
+        .location-button:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* 地图比例尺 */
+        .map-scale {
+            position: absolute;
+            left: 20px;
+            bottom: 100px;
+            height: 4px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 2px;
+            z-index: 10;
+        }
+
+        .map-scale::after {
+            content: '1公里';
+            position: absolute;
+            top: -20px;
+            right: 0;
+            font-size: 10px;
+            color: #333;
+            background-color: white;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="frame">
+        <div class="map-container">
+            <div class="status-bar">
+                <div class="time" id="current-time">9:41</div>
+                <div class="icons">
+                    <div class="signal">📶</div>
+                    <div class="wifi">📡</div>
+                    <div class="battery">🔋</div>
+                </div>
+            </div>
+
+            <div class="search-bar">
+                <div>🔍</div>
+                <input type="text" placeholder="搜索文化地点、历史遗址、民俗村落...">
+            </div>
+
+            <div class="map">
+                <div class="map-overlay"></div>
+
+                <div class="location-markers">
+                    <div class="marker historical" style="top: 35%; left: 30%;" onclick="switchTab('APP语音导览界面')">🏛️</div>
+                    <div class="marker museum" style="top: 45%; left: 55%;" onclick="switchTab('APP语音导览界面')">🏮</div>
+                    <div class="marker cultural" style="top: 60%; left: 35%;" onclick="switchTab('APP语音导览界面')">🎭</div>
+                    <div class="marker" style="top: 30%; left: 70%;"    onclick="switchTab('APP语音导览界面')">📍</div>
+                    <div class="marker historical" style="top: 50%; left: 20%;" onclick="switchTab('APP语音导览界面')">🏯</div>
+                </div>
+
+                <div class="info-card" id="info-card">
+                    <div class="title">丛台公园 (赵王宫遗址)</div>
+                    <div class="subtitle">历史遗迹 · 距离2.3公里</div>
+                    <div class="content" onclick="toggleContent()">
+                        丛台，是战国时期赵国国都邯郸的著名建筑。相传为赵武灵王所建，作为观赏台，也是赵王接见宾客之处。现为国家重点文物保护单位，内有丛台碑、赵王宫遗址等多处历史遗迹。丛台高26米，南北长110米，东西宽60米，台上有据胜亭、回澜亭等建筑。台前翠柏夹道，有明嘉靖年间所立"丛台"石碑。丛台公园以丛台为中心，占地24公顷，园内亭台楼阁，绿树成荫，是邯郸市著名的游览胜地。
+                    </div>
+                    <div class="actions">
+                        <button class="secondary" onclick="showDetails()">查看详情</button>
+                        <button class="primary" onclick="navigateTo()">导航前往</button>
+                    </div>
+                </div>
+
+                <div class="layers-button" onclick="toggleLayers()">
+                    <div class="layers-icon"></div>
+                </div>
+
+                <div class="map-layers" id="map-layers">
+                    <div class="layer-item active" onclick="toggleLayer('historical')">
+                        <div class="color historical"></div>
+                        <div class="text">历史遗迹</div>
+                    </div>
+                    <div class="layer-item active" onclick="toggleLayer('museum')">
+                        <div class="color museum"></div>
+                        <div class="text">博物馆</div>
+                    </div>
+                    <div class="layer-item active" onclick="toggleLayer('cultural')">
+                        <div class="color cultural"></div>
+                        <div class="text">非遗基地</div>
+                    </div>
+                    <div class="layer-item active" onclick="toggleLayer('ancient')">
+                        <div class="color ancient"></div>
+                        <div class="text">赵国历史</div>
+                    </div>
+                </div>
+
+                <div class="zoom-controls">
+                    <div class="zoom-button" onclick="zoomIn()">+</div>
+                    <div class="zoom-button" onclick="zoomOut()">-</div>
+                </div>
+
+                <div class="location-button" onclick="locateMe()">
+                    <div>📍</div>
+                </div>
+
+                <div class="map-scale" style="width: 80px;"></div>
+            </div>
+
+            <!-- 底部导航 -->
+            <div class="bottom-nav">
+                <div class="nav-item" onclick="switchTab('首页')">
+                    <div class="nav-icon">🏠</div>
+                    <div class="nav-name">首页</div>
+                </div>
+                <div class="nav-item active" onclick="switchTab('景点')">
+                    <div class="nav-icon">🗿</div>
+                    <div class="nav-name">景点</div>
+                </div>
+                <div class="nav-item" onclick="switchTab('文化')">
+                    <div class="nav-icon">📚</div>
+                    <div class="nav-name">文化</div>
+                </div>
+                <div class="nav-item" onclick="switchTab('行程')">
+                    <div class="nav-icon">🗺️</div>
+                    <div class="nav-name">行程</div>
+                </div>
+                <div class="nav-item" onclick="switchTab('我的')">
+                    <div class="nav-icon">👤</div>
+                    <div class="nav-name">我的</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function switchTab(tab) {
+        window.location.href = tab + '.html';
+    }
+
+    // 页面加载时自动高亮当前页面对应的导航项
+    document.addEventListener('DOMContentLoaded', () => {
+        const currentPage = window.location.pathname.split('/').pop().split('.')[0]; // 获取当前文件名（不含后缀）
+        const navItems = document.querySelectorAll('.nav-item');
+
+        navItems.forEach(item => {
+            const tab = item.getAttribute('onclick')?.match(/'(.+?)'/)?.[1];
+
+            if (tab === currentPage) {
+                item.classList.add('active');
+            }
+
+            item.addEventListener('click', () => {
+                navItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+    });
+
+
+    // 更新时间
+    function updateTime() {
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2,  '0');
+        const minutes = now.getMinutes().toString().padStart(2,  '0');
+        document.getElementById('current-time').textContent  = `${hours}:${minutes}`;
+    }
+
+    setInterval(updateTime, 1000);
+    updateTime();
+
+    // 显示/隐藏信息卡片
+    function showInfoCard(locationName) {
+        const infoCard = document.getElementById('info-card');
+        const title = infoCard.querySelector('.title');
+        const subtitle = infoCard.querySelector('.subtitle');
+
+        // 根据地点名称更新卡片内容
+        switch(locationName) {
+            case '丛台公园 (赵王宫遗址)':
+                title.textContent  = '丛台公园 (赵王宫遗址)';
+                subtitle.textContent  = '历史遗迹 · 距离2.3公里';
+                infoCard.querySelector('.content').textContent  =
+                    '丛台，是战国时期赵国国都邯郸的著名建筑。相传为赵武灵王所建，作为观赏台，也是赵王接见宾客之处。现为国家重点文物保护单位，内有丛台碑、赵王宫遗址等多处历史遗迹。丛台高26米，南北长110米，东西宽60米，台上有据胜亭、回澜亭等建筑。台前翠柏夹道，有明嘉靖年间所立"丛台"石碑。丛台公园以丛台为中心，占地24公顷，园内亭台楼阁，绿树成荫，是邯郸市著名的游览胜地。';
+                break;
+            case '邯郸市博物馆':
+                title.textContent  = '邯郸市博物馆';
+                subtitle.textContent  = '博物馆 · 距离1.8公里';
+                infoCard.querySelector('.content').textContent  =
+                    '邯郸市博物馆位于邯郸市中心，是一座综合性地方博物馆。馆藏文物5万余件，其中国家一级文物57件，二级文物300余件。常设展览有"邯郸历史文化陈列"、"赵国青铜器精品展"、"磁州窑瓷器展"等。博物馆建筑融合了传统与现代风格，是了解邯郸历史文化的重要窗口。';
+                break;
+            case '燕赵民俗文化村':
+                title.textContent  = '燕赵民俗文化村';
+                subtitle.textContent  = '非遗基地 · 距离5.2公里';
+                infoCard.querySelector('.content').textContent  =
+                    '燕赵民俗文化村集中展示了河北地区丰富多彩的民间艺术和传统手工艺。村内有传统民居建筑群、民间工艺作坊、非遗展示馆等。游客可以体验剪纸、皮影、面塑、织布等传统工艺，观看河北梆子、评剧等地方戏曲表演，品尝地道的燕赵美食。';
+                break;
+            case '赵王城遗址公园':
+                title.textContent  = '赵王城遗址公园';
+                subtitle.textContent  = '历史遗迹 · 距离3.5公里';
+                infoCard.querySelector('.content').textContent  =
+                    '赵王城遗址公园是战国时期赵国都城的遗址所在地，总面积约5平方公里。遗址内保存有城墙、宫殿基址、手工业作坊区等遗迹。公园内设有遗址博物馆、考古展示区、文化体验区等，通过实物展示和数字技术再现了战国时期赵国的都城风貌。';
+                break;
+            case '武灵丛台遗址':
+                title.textContent  = '武灵丛台遗址';
+                subtitle.textContent  = '历史遗迹 · 距离4.1公里';
+                infoCard.querySelector('.content').textContent  =
+                    '武灵丛台是赵武灵王"胡服骑射"改革的历史见证地。遗址包括丛台主体建筑、练兵场、兵器库等遗迹。丛台高约15米，周长120米，台上原有楼阁建筑。遗址公园内设有赵武灵王雕像、胡服骑射浮雕墙、军事文化展示区等，生动展现了这段著名的军事改革历史。';
+                break;
+        }
+
+        infoCard.classList.add('visible');
+    }
+
+    // 切换内容展开/收起
+    function toggleContent() {
+        const infoCard = document.getElementById('info-card');
+        infoCard.classList.toggle('expanded');
+    }
+
+
+    // 显示/隐藏地图图层控制
+    function toggleLayers() {
+        const layers = document.getElementById('map-layers');
+        layers.classList.toggle('visible');
+    }
+
+    // 点击地图其他区域关闭卡片和图层控制
+    document.querySelector('.map').addEventListener('click',  function(e) {
+        if (!e.target.closest('.marker')  && !e.target.closest('.layers-button'))  {
+            document.getElementById('info-card').classList.remove('visible');
+            document.getElementById('map-layers').classList.remove('visible');
+        }
+    });
+
+    // 阻止事件冒泡
+    document.querySelectorAll('.marker,  .layers-button, .info-card, .map-layers').forEach(el => {
+        el.addEventListener('click',  e => e.stopPropagation());
+    });
+</script>
+</body>
+</html>

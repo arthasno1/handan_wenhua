@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>图4-24 《燕赵冀》APP虚拟展馆界面设计图</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      }
+
+      body {
+        background-color: #f5f5f5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+
+      .phone-container {
+        width: 100%;
+        max-width: 420px;
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 20px;
+        margin: 0 auto;
+      }
+
+      .phone-screen {
+        position: relative;
+        width: 100%;
+        /* 竖屏比例 */
+        aspect-ratio: 9/16;
+        background: #000000;
+        border-radius: 30px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* 3D虚拟展厅主屏幕 */
+      .virtual-scene {
+        position: relative;
+        flex: 1;
+        background-image: url('img/赵王印.png');
+        background-size: cover;
+        background-position: center;
+        overflow: hidden;
+      }
+
+      /* 视角视差效果层 */
+      .parallax-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('img/赵王印.png');
+        background-size: cover;
+        background-position: center;
+        opacity: 0.4;
+        mix-blend-mode: overlay;
+      }
+
+      /* 场景中的展品标记 */
+      .exhibit-marker {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        transform: translate(-50%, -50%);
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .exhibit-marker:hover {
+        transform: translate(-50%, -50%) scale(1.2);
+      }
+
+      .marker-dot {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background-color: #ffffff;
+        border-radius: 50%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        animation: pulse 2s infinite;
+      }
+
+      .marker-ring {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        border: 2px solid #ffffff;
+        border-radius: 50%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0.6;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: translate(-50%, -50%) scale(1);
+          opacity: 1;
+        }
+        70% {
+          transform: translate(-50%, -50%) scale(2);
+          opacity: 0;
+        }
+        100% {
+          transform: translate(-50%, -50%) scale(1);
+          opacity: 0;
+        }
+      }
+
+      /* 活跃标记 */
+      .exhibit-marker.active .marker-dot {
+        background-color: #3e7d6b;
+      }
+
+      .exhibit-marker.active .marker-ring {
+        border-color: #3e7d6b;
+      }
+
+      /* 展品信息面板 */
+      .exhibit-panel {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
+        background-color: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        border-radius: 12px;
+        padding: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease-out;
+        transform: translateY(150%);
+        opacity: 0;
+      }
+
+      .exhibit-panel.active {
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      .panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+      }
+
+      .exhibit-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .close-panel {
+        width: 24px;
+        height: 24px;
+        border-radius: 12px;
+        background-color: rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        color: #666;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .close-panel:hover {
+        background-color: rgba(0, 0, 0, 0.2);
+      }
+
+      .exhibit-info {
+        display: flex;
+        gap: 12px;
+      }
+
+      .exhibit-thumb {
+        width: 60px;
+        height: 60px;
+        border-radius: 6px;
+        background-size: cover;
+        background-position: center;
+        flex-shrink: 0;
+      }
+
+      .exhibit-description {
+        flex: 1;
+        font-size: 14px;
+        color: #333;
+        line-height: 1.5;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .panel-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 10px;
+        gap: 10px;
+      }
+
+      .panel-button {
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .panel-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .btn-secondary {
+        background-color: rgba(0, 0, 0, 0.05);
+        color: #666;
+      }
+
+      .btn-primary {
+        background-color: #3e7d6b;
+        color: white;
+      }
+
+      /* 展厅名称标识 */
+      .hall-title {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 20px;
+        padding: 8px 15px;
+        color: white;
+        font-size: 14px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s;
+      }
+
+      .hall-title:hover {
+        background-color: rgba(0, 0, 0, 0.7);
+      }
+
+      .hall-icon {
+        font-size: 16px;
+      }
+
+      /* 控制面板 */
+      .control-panel {
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .control-button {
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+        background-color: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 18px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .control-button:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+        transform: scale(1.05);
+      }
+
+      /* 返回按钮 */
+      .back-button {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 18px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .back-button:hover {
+        background-color: rgba(0, 0, 0, 0.7);
+      }
+
+      /* 展馆地图 */
+      .museum-map {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        border-radius: 25px;
+        background-color: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .museum-map:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+      }
+
+      /* 展厅列表 */
+      .exhibition-list {
+        position: absolute;
+        right: 20px;
+        top: 80px;
+        background-color: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        transform: translateX(120%);
+        opacity: 0;
+        transition: all 0.3s ease-out;
+        z-index: 20;
+      }
+
+      .exhibition-list.active {
+        transform: translateX(0);
+        opacity: 1;
+      }
+
+      .exhibition-item {
+        padding: 10px 15px;
+        font-size: 14px;
+        color: #333;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .exhibition-item:hover {
+        background-color: rgba(62, 125, 107, 0.05);
+      }
+
+      .exhibition-item.active {
+        background-color: rgba(62, 125, 107, 0.1);
+        color: #3e7d6b;
+        font-weight: 500;
+      }
+
+      .exhibition-item:last-child {
+        border-bottom: none;
+      }
+
+      /* 下方控制栏 */
+      .bottom-controls {
+        height: 60px;
+        background-color: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 20px;
+        transition: all 0.3s;
+      }
+
+      .navigation-controls {
+        display: flex;
+        gap: 15px;
+      }
+
+      .nav-button {
+        width: 36px;
+        height: 36px;
+        border-radius: 18px;
+        background-color: rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 18px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .nav-button:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        transform: scale(1.05);
+      }
+
+      .view-mode {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .mode-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 4px;
+        background-color: #3e7d6b;
+      }
+
+      .mode-label {
+        color: white;
+        font-size: 14px;
+      }
+
+      .action-controls {
+        display: flex;
+        gap: 15px;
+      }
+
+      .action-button {
+        width: 36px;
+        height: 36px;
+        border-radius: 18px;
+        background-color: rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 18px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .action-button:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        transform: scale(1.05);
+      }
+
+      /* 场景中的光效 */
+      .light-effect {
+        position: absolute;
+        width: 150px;
+        height: 150px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 70%);
+        border-radius: 50%;
+        pointer-events: none;
+        animation: light-pulse 5s infinite ease-in-out;
+      }
+
+      @keyframes light-pulse {
+        0%,
+        100% {
+          opacity: 0.7;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.4;
+          transform: scale(0.8);
+        }
+      }
+
+      /* 音频播放指示器 */
+      .audio-indicator {
+        position: absolute;
+        bottom: 70px;
+        left: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 20px;
+        padding: 8px 15px;
+        color: white;
+        font-size: 12px;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      .audio-indicator.active {
+        opacity: 1;
+      }
+
+      .audio-icon {
+        font-size: 16px;
+        animation: pulse-audio 1.5s infinite;
+      }
+
+      @keyframes pulse-audio {
+        0% {
+          opacity: 0.5;
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0.5;
+        }
+      }
+
+      /* 提示层 */
+      .gesture-hint {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-align: center;
+        padding: 20px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+        z-index: 30;
+      }
+
+      .gesture-hint.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .hint-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+
+      .hint-description {
+        font-size: 14px;
+        max-width: 80%;
+        margin-bottom: 20px;
+      }
+
+      .hint-gestures {
+        display: flex;
+        gap: 30px;
+        margin-bottom: 30px;
+      }
+
+      .gesture {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .gesture-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 30px;
+        background-color: rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+      }
+
+      .gesture-label {
+        font-size: 12px;
+      }
+
+      .hint-button {
+        padding: 8px 20px;
+        background-color: #3e7d6b;
+        color: white;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .hint-button:hover {
+        background-color: #2c5e50;
+      }
+
+      /* 视角控制动画 */
+      .perspective-animate {
+        transition: all 0.5s ease-out;
+      }
+
+      /* 3D模型容器 */
+      .model-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+
+      /* 3D模型展示模态框 */
+      .model-viewer-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        display: flex;
+        flex-direction: column;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+        z-index: 50;
+      }
+
+      .model-viewer-modal.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .model-header {
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: white;
+      }
+
+      .close-model {
+        font-size: 24px;
+        cursor: pointer;
+      }
+
+      .model-content {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      /* 增强现实按钮 */
+      .ar-button {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        padding: 10px 20px;
+        background-color: #3e7d6b;
+        color: white;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .ar-button:hover {
+        background-color: #2c5e50;
+        transform: translateY(-2px);
+      }
+
+      /* 加载指示器 */
+      .loading-indicator {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+      }
+
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: #3e7d6b;
+        animation: spin 1s linear infinite;
+        margin-bottom: 10px;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="phone-container">
+      <div class="phone-screen">
+        <!-- 3D虚拟展厅主屏幕 -->
+        <div class="virtual-scene perspective-animate" id="virtual-scene">
+          <div class="parallax-overlay perspective-animate"></div>
+
+          <!-- 场景光效 -->
+          <div class="light-effect" style="top: 30%; left: 40%"></div>
+          <div class="light-effect" style="top: 50%; left: 60%"></div>
+
+          <!-- 展品标记 -->
+          <div class="exhibit-marker" data-exhibit="1" style="top: 35%; left: 30%">
+            <div class="marker-dot"></div>
+            <div class="marker-ring"></div>
+          </div>
+
+          <div class="exhibit-marker active" data-exhibit="2" style="top: 45%; left: 55%">
+            <div class="marker-dot"></div>
+            <div class="marker-ring"></div>
+          </div>
+
+          <div class="exhibit-marker" data-exhibit="3" style="top: 60%; left: 25%">
+            <div class="marker-dot"></div>
+            <div class="marker-ring"></div>
+          </div>
+
+          <div class="exhibit-marker" data-exhibit="4" style="top: 40%; left: 75%">
+            <div class="marker-dot"></div>
+            <div class="marker-ring"></div>
+          </div>
+
+          <!-- 3D模型容器 -->
+          <div class="model-container" id="model-container"></div>
+
+          <!-- 展厅名称标识 -->
+          <div class="hall-title" onclick="switchTab('赵王虎符')">
+            <span class="hall-icon">🏺</span>
+            <span>青铜器展厅</span>
+          </div>
+
+          <!-- 返回按钮 -->
+          <div class="back-button" id="back-button" onclick="switchTab('赵王虎符')">⬅️</div>
+
+          <!-- 展馆地图 -->
+          <div class="museum-map" id="toggle-map">🗺️</div>
+
+          <!-- 展厅列表 -->
+          <div class="exhibition-list" id="exhibition-list">
+            <div class="exhibition-item active" data-hall="1">
+              <span>🏺</span>
+              <span>青铜器展厅</span>
+            </div>
+            <div class="exhibition-item" data-hall="2">
+              <span>🖼️</span>
+              <span>书画展厅</span>
+            </div>
+            <div class="exhibition-item" data-hall="3">
+              <span>⚔️</span>
+              <span>兵器展厅</span>
+            </div>
+            <div class="exhibition-item" data-hall="4">
+              <span>🧩</span>
+              <span>玉器展厅</span>
+            </div>
+          </div>
+
+          <!-- 控制面板 -->
+          <div class="control-panel">
+            <div class="control-button" id="zoom-in">+</div>
+            <div class="control-button" id="zoom-out">-</div>
+            <div class="control-button" id="reset-view">↻</div>
+            <div class="control-button" id="toggle-audio">🔊</div>
+          </div>
+
+          <!-- 增强现实按钮 -->
+          <div class="ar-button" id="ar-button">
+            <i class="fa fa-cube"></i>
+            <span>AR体验</span>
+          </div>
+
+          <!-- 音频播放指示器 -->
+          <div class="audio-indicator" id="audio-indicator">
+            <span class="audio-icon">🔊</span>
+            <span>正在播放讲解</span>
+          </div>
+
+          <!-- 展品信息面板 -->
+          <div class="exhibit-panel" id="exhibit-panel">
+            <div class="panel-header">
+              <div class="exhibit-title" id="exhibit-title">赵王虎符</div>
+              <div class="close-panel" id="close-panel">×</div>
+            </div>
+
+            <div class="exhibit-info">
+              <div class="exhibit-thumb" id="exhibit-thumb" style="background-image: url('img/赵王印.png')"></div>
+              <div class="exhibit-description" id="exhibit-description">赵王虎符是战国时期赵国军事调度的重要凭证，由赵王半部和将军半部组成，合之则可调动军队。此虎符为战国中期赵武灵王时期文物，采用青铜铸造，形状为虎首人身。</div>
+            </div>
+
+            <div class="panel-actions">
+              <div class="panel-button btn-secondary" id="favorite-btn"><i class="fa fa-heart-o"></i> 收藏</div>
+              <div class="panel-button btn-secondary" id="audio-btn"><i class="fa fa-volume-up"></i> 语音讲解</div>
+              <div class="panel-button btn-primary" id="view-detail-btn"><i class="fa fa-eye"></i> 查看详情</div>
+            </div>
+          </div>
+
+          <!-- 加载指示器 -->
+          <div class="loading-indicator" id="loading-indicator" style="display: none">
+            <div class="spinner"></div>
+            <span>加载中...</span>
+          </div>
+        </div>
+
+        <!-- 下方控制栏 -->
+        <div class="bottom-controls">
+          <div class="navigation-controls">
+            <div class="nav-button" id="move-left">⬅️</div>
+            <div class="nav-button" id="move-right">➡️</div>
+          </div>
+
+          <div class="view-mode">
+            <div class="mode-indicator"></div>
+            <div class="mode-label">漫游模式</div>
+          </div>
+
+          <div class="action-controls">
+            <div class="action-button" id="toggle-audio-btn">🔊</div>
+            <div class="action-button" id="take-photo">📷</div>
+            <div class="action-button" id="toggle-info">ℹ️</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3D模型展示模态框 -->
+    <div class="model-viewer-modal" id="model-viewer-modal">
+      <div class="model-header">
+        <div class="exhibit-title" id="modal-title">赵王虎符</div>
+        <div class="close-model" id="close-model">×</div>
+      </div>
+      <div class="model-content">
+        <!-- 3D模型将在这里加载 -->
+        <div class="model-viewer-container" id="model-viewer-container">
+          <img src="img/赵王印.png" alt="展品3D模型" style="max-width: 100%; max-height: 100%; object-fit: contain" />
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function switchTab(tab) {
+        window.location.href = tab + '.html'
+      }
+
+      // 页面加载时自动高亮当前页面对应的导航项
+      document.addEventListener('DOMContentLoaded', () => {
+        const currentPage = window.location.pathname.split('/').pop().split('.')[0] // 获取当前文件名（不含后缀）
+        const navItems = document.querySelectorAll('.nav-item')
+
+        navItems.forEach((item) => {
+          const tab = item.getAttribute('onclick')?.match(/'(.+?)'/)?.[1]
+
+          if (tab === currentPage) {
+            item.classList.add('active')
+          }
+
+          item.addEventListener('click', () => {
+            navItems.forEach((i) => i.classList.remove('active'))
+            item.classList.add('active')
+          })
+        })
+      })
+
+      // 展品数据（保持不变）
+      const exhibits = [
+        /* 原数据 */
+      ]
+      const halls = [
+        /* 原数据 */
+      ]
+
+      // 初始化变量（保持不变）
+      let currentExhibit = 2
+      let currentHall = 1
+      // ...（其他变量保持不变）
+
+      // DOM 元素（保持不变）
+      // ...（所有 DOM 选择保持不变）
+
+      // 初始化展品标记点击事件（保持不变）
+      exhibitMarkers.forEach((marker) => {
+        marker.addEventListener('click', () => {
+          const exhibitId = parseInt(marker.getAttribute('data-exhibit'))
+          showExhibit(exhibitId)
+        })
+      })
+
+      // 关闭展品信息面板（保持不变）
+      closePanel.addEventListener('click', () => {
+        exhibitPanel.classList.remove('active')
+        exhibitMarkers.forEach((marker) => marker.classList.remove('active'))
+      })
+
+      // 切换展厅列表（保持不变）
+      toggleMap.addEventListener('click', () => {
+        exhibitionList.classList.toggle('active')
+      })
+
+      // 展厅切换（保持不变）
+      exhibitionItems.forEach((item) => {
+        item.addEventListener('click', () => {
+          const hallId = parseInt(item.getAttribute('data-hall'))
+          switchHall(hallId)
+          exhibitionList.classList.remove('active')
+        })
+      })
+
+      // 缩放控制（保持不变）
+      // ...（zoomIn、zoomOut、resetView 事件处理保持不变）
+
+      // 音频控制（保持不变）
+      // ...（toggleAudioPlayback 函数及事件绑定保持不变）
+
+      // 拍照功能（保持不变）
+      // ...（takePhoto 事件处理保持不变）
+
+      // 视角移动（保持不变）
+      // ...（moveLeft、moveRight 事件处理保持不变）
+
+      // 开始游览（保持不变）
+      startTour.addEventListener('click', () => {
+        gestureHint.classList.remove('active')
+        hintTimeout = setTimeout(() => {
+          if (!isDragging) {
+            gestureHint.classList.add('active')
+          }
+        }, 10000)
+      })
+
+      // 拖动视角（优化作用域）
+      let initialDistanceTouch = null // 触摸专用变量
+      let initialScaleTouch = null
+
+      virtualScene.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return // 只处理左键
+        isDragging = true
+        lastX = e.clientX
+        lastY = e.clientY
+        virtualScene.style.cursor = 'grabbing'
+        clearTimeout(hintTimeout)
+      })
+
+      document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return
+        const deltaX = e.clientX - lastX
+        const deltaY = e.clientY - lastY
+        translateX += deltaX
+        translateY += deltaY
+        lastX = e.clientX
+        lastY = e.clientY
+        updateView()
+      })
+
+      document.addEventListener('mouseup', () => {
+        isDragging = false
+        virtualScene.style.cursor = 'default'
+      })
+
+      // 双指缩放（触摸设备，修正作用域和重复绑定）
+      virtualScene.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 2) {
+          e.preventDefault() // 阻止默认触摸行为
+          const touch1 = e.touches[0]
+          const touch2 = e.touches[1]
+          initialDistanceTouch = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY)
+          initialScaleTouch = scale
+          isDragging = true
+          clearTimeout(hintTimeout)
+        }
+      })
+
+      virtualScene.addEventListener('touchmove', (e) => {
+        if (e.touches.length === 2 && initialDistanceTouch !== null) {
+          e.preventDefault() // 阻止滚动
+          const touch1 = e.touches[0]
+          const touch2 = e.touches[1]
+          const currentDistance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY)
+          const newScale = initialScaleTouch * (currentDistance / initialDistanceTouch)
+
+          if (newScale >= 0.7 && newScale <= 1.5) {
+            scale = newScale
+            updateView()
+          }
+        }
+      })
+
+      virtualScene.addEventListener('touchend', () => {
+        initialDistanceTouch = null
+        initialScaleTouch = null
+        isDragging = false
+      })
+
+      // 更新视图函数（修正位置和作用域）
+      function updateView() {
+        virtualScene.style.transform = `scale(${scale}) translate(${translateX}px, ${translateY}px)`
+        parallaxOverlay.style.transform = `scale(${scale * 1.05}) translate(${translateX * 1.05}px, ${translateY * 1.05}px)`
+      }
+    </script>
+  </body>
+</html>

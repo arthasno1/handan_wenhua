@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>《燕赵冀》APP美食推荐界面</title>
+    <style>
+      .bottom-nav {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-around;
+        padding: 10px 0;
+        background: white;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+      }
+
+      .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .nav-icon {
+        width: 24px;
+        height: 24px;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        transition: all 0.2s;
+      }
+
+      .nav-name {
+        font-size: 12px;
+        transition: all 0.2s;
+      }
+
+      .nav-item.active {
+        color: #9d2933;
+      }
+
+      .nav-item:not(.active) {
+        color: #999;
+      }
+
+      .nav-item:not(.active):hover {
+        color: #666;
+      }
+
+      .nav-item:hover .nav-icon {
+        transform: scale(1.1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+      }
+
+      body {
+        background-color: #f8f8f8;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .phone-container {
+        position: relative;
+        width: 360px;
+        height: 640px;
+        background-color: white;
+        border-radius: 30px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+        transform: scale(0.95);
+        transition: transform 0.3s ease;
+      }
+
+      .phone-container:hover {
+        transform: scale(1);
+      }
+
+      .status-bar {
+        height: 24px;
+        background-color: #3e7d6b;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 12px;
+        align-items: center;
+        color: white;
+        font-size: 12px;
+      }
+
+      .header {
+        background-color: #3e7d6b;
+        padding: 10px 15px 15px;
+        color: white;
+        position: relative;
+      }
+
+      .search-area {
+        display: flex;
+        align-items: center;
+        background-color: white;
+        border-radius: 20px;
+        padding: 8px 15px;
+        margin-top: 5px;
+        transition: box-shadow 0.3s ease;
+      }
+
+      .search-area:focus-within {
+        box-shadow: 0 0 0 2px rgba(62, 125, 107, 0.5);
+      }
+
+      .search-area i {
+        margin-right: 8px;
+        color: #888;
+        transition: color 0.3s ease;
+      }
+
+      .search-area:focus-within i {
+        color: #3e7d6b;
+      }
+
+      .search-input {
+        flex: 1;
+        border: none;
+        outline: none;
+        font-size: 14px;
+        color: #333;
+      }
+
+      .filters {
+        display: flex;
+        overflow-x: auto;
+        padding: 10px 0;
+        margin-top: 5px;
+        scrollbar-width: none;
+      }
+
+      .filters::-webkit-scrollbar {
+        display: none;
+      }
+
+      .filter-tag {
+        padding: 4px 12px;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 15px;
+        margin-right: 10px;
+        font-size: 12px;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .filter-tag:hover {
+        transform: translateY(-2px);
+      }
+
+      .filter-tag.active {
+        background-color: #f2c94c;
+        color: #333;
+        font-weight: bold;
+      }
+
+      .content {
+        padding: 15px;
+        overflow-y: auto;
+        height: calc(100% - 140px);
+        scroll-behavior: smooth;
+      }
+
+      .food-item {
+        display: flex;
+        margin-bottom: 20px;
+        background-color: white;
+        border-radius: 12px;
+        padding: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      .food-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .food-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 5px;
+        height: 100%;
+        background-color: #3e7d6b;
+        border-top-left-radius: 12px;
+        border-bottom-left-radius: 12px;
+        transition: all 0.3s ease;
+      }
+
+      .food-item:hover::before {
+        width: 8px;
+      }
+
+      .food-image {
+        width: 100px;
+        height: 100px;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-right: 12px;
+        flex-shrink: 0;
+        position: relative;
+      }
+
+      .food-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+      }
+
+      .food-item:hover .food-image img {
+        transform: scale(1.05);
+      }
+
+      .food-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .food-name {
+        font-weight: 600;
+        margin-bottom: 6px;
+        font-size: 16px;
+        color: #333;
+        transition: color 0.3s ease;
+      }
+
+      .food-item:hover .food-name {
+        color: #3e7d6b;
+      }
+
+      .food-desc {
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 8px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .food-meta {
+        display: flex;
+        font-size: 12px;
+        color: #888;
+      }
+
+      .food-price {
+        color: #c83932;
+        font-weight: 600;
+        margin-right: 10px;
+      }
+
+      .food-distance {
+        display: flex;
+        align-items: center;
+      }
+
+      .food-distance i {
+        font-size: 10px;
+        margin-right: 2px;
+      }
+
+      .food-tags {
+        display: flex;
+        margin-top: 5px;
+      }
+
+      .food-tag {
+        font-size: 10px;
+        background-color: #eaf6f2;
+        color: #3e7d6b;
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin-right: 5px;
+        transition: all 0.3s ease;
+      }
+
+      .food-item:hover .food-tag {
+        background-color: #3e7d6b;
+        color: white;
+      }
+
+      .cultural-tag {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: rgba(200, 57, 50, 0.1);
+        color: #c83932;
+        font-size: 10px;
+        padding: 2px 6px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+      }
+
+      .food-item:hover .cultural-tag {
+        background-color: rgba(200, 57, 50, 0.3);
+      }
+
+      .cultural-tag i {
+        font-size: 10px;
+        margin-right: 2px;
+      }
+
+      .nav-bar {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 60px;
+        background-color: white;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        border-top: 1px solid #eee;
+      }
+
+      .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 8px 0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .nav-item:hover {
+        transform: translateY(-3px);
+      }
+
+      .nav-item i {
+        font-size: 20px;
+        color: #999;
+        margin-bottom: 2px;
+        transition: all 0.3s ease;
+      }
+
+      .nav-item:hover i {
+        color: #3e7d6b;
+      }
+
+      .nav-item.active i {
+        color: #3e7d6b;
+      }
+
+      .nav-item span {
+        font-size: 10px;
+        color: #999;
+        transition: all 0.3s ease;
+      }
+
+      .nav-item:hover span {
+        color: #3e7d6b;
+      }
+
+      .nav-item.active span {
+        color: #3e7d6b;
+      }
+
+      .food-map-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 80px;
+        width: 50px;
+        height: 50px;
+        background-color: #3e7d6b;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 2px 10px rgba(62, 125, 107, 0.3);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 10;
+      }
+
+      .food-map-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 5px 15px rgba(62, 125, 107, 0.4);
+      }
+
+      .food-map-btn i {
+        color: white;
+        font-size: 24px;
+      }
+
+      /* 邯郸剪纸风格的装饰元素 */
+      .decoration {
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 100 100"><path d="M50,10 C70,10 90,30 90,50 C90,70 70,90 50,90 C30,90 10,70 10,50 C10,30 30,10 50,10 Z" fill="none" stroke="%233E7D6B" stroke-width="1" stroke-dasharray="5,5" opacity="0.3"/><path d="M50,20 C65,20 80,35 80,50 C80,65 65,80 50,80 C35,80 20,65 20,50 C20,35 35,20 50,20 Z" fill="none" stroke="%233E7D6B" stroke-width="1" stroke-dasharray="3,3" opacity="0.2"/></svg>');
+        background-size: contain;
+        opacity: 0.1;
+        z-index: -1;
+        animation: rotate 60s linear infinite;
+      }
+
+      .decoration-1 {
+        top: 120px;
+        left: -30px;
+      }
+
+      .decoration-2 {
+        bottom: 150px;
+        right: -30px;
+        transform: rotate(45deg);
+      }
+
+      /* 添加古代食谱的装饰风格 */
+      .page-title {
+        color: #333;
+        font-size: 18px;
+        margin-bottom: 15px;
+        padding-left: 10px;
+        position: relative;
+        font-weight: normal;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+      }
+
+      .page-title:hover {
+        transform: translateX(5px);
+      }
+
+      .page-title::before {
+        content: '';
+        width: 3px;
+        height: 18px;
+        background-color: #3e7d6b;
+        position: absolute;
+        left: 0;
+        border-radius: 3px;
+        transition: all 0.3s ease;
+      }
+
+      .page-title:hover::before {
+        width: 5px;
+      }
+
+      .section-divider {
+        height: 10px;
+        margin: 15px 0;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 100 10"><path d="M0,5 C20,0 30,10 50,5 C70,0 80,10 100,5" fill="none" stroke="%233E7D6B" stroke-width="1" opacity="0.3"/></svg>');
+        background-size: 100px 10px;
+        background-repeat: repeat-x;
+      }
+
+      /* 添加动画效果 */
+      @keyframes rotate {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .food-item {
+        animation: fadeIn 0.5s ease forwards;
+        opacity: 0;
+      }
+
+      .food-item:nth-child(1) {
+        animation-delay: 0.1s;
+      }
+      .food-item:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .food-item:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+      .food-item:nth-child(4) {
+        animation-delay: 0.4s;
+      }
+
+      /* 添加模态框样式 */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: 100;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .modal-content {
+        background-color: white;
+        width: 80%;
+        max-width: 400px;
+        border-radius: 15px;
+        overflow: hidden;
+        animation: modalFadeIn 0.3s ease;
+      }
+
+      @keyframes modalFadeIn {
+        from {
+          opacity: 0;
+          transform: scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .modal-header {
+        background-color: #3e7d6b;
+        color: white;
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .modal-body {
+        padding: 20px;
+      }
+
+      .modal-image {
+        width: 100%;
+        height: 200px;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 15px;
+      }
+
+      .modal-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .modal-title {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #333;
+      }
+
+      .modal-description {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 15px;
+        line-height: 1.5;
+      }
+
+      .modal-tags {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: 15px;
+      }
+
+      .modal-tag {
+        background-color: #eaf6f2;
+        color: #3e7d6b;
+        padding: 4px 10px;
+        border-radius: 15px;
+        margin-right: 8px;
+        margin-bottom: 8px;
+        font-size: 12px;
+      }
+
+      .modal-footer {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 20px 20px;
+      }
+
+      .modal-btn {
+        padding: 8px 20px;
+        border-radius: 20px;
+        border: none;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .modal-btn-primary {
+        background-color: #3e7d6b;
+        color: white;
+      }
+
+      .modal-btn-primary:hover {
+        background-color: #2c5d4f;
+      }
+
+      .modal-btn-secondary {
+        background-color: #f0f0f0;
+        color: #666;
+      }
+
+      .modal-btn-secondary:hover {
+        background-color: #e0e0e0;
+      }
+
+      .close-btn {
+        cursor: pointer;
+        font-size: 20px;
+      }
+
+      /* 加载动画 */
+      .loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100px;
+      }
+
+      .loading-circle {
+        width: 10px;
+        height: 10px;
+        margin: 0 5px;
+        background-color: #3e7d6b;
+        border-radius: 50%;
+        animation: loadingBounce 1s infinite ease-in-out;
+      }
+
+      .loading-circle:nth-child(1) {
+        animation-delay: 0s;
+      }
+      .loading-circle:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .loading-circle:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+
+      @keyframes loadingBounce {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-15px);
+        }
+      }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  </head>
+  <body>
+    <div class="phone-container">
+      <div class="status-bar">
+        <span>20:25</span>
+        <div>
+          <span><i class="fas fa-signal"></i></span>
+          <span><i class="fas fa-wifi"></i></span>
+          <span><i class="fas fa-battery-three-quarters"></i></span>
+        </div>
+      </div>
+
+      <div class="header">
+        <h1 style="font-size: 18px; font-weight: normal">美食推荐</h1>
+        <div class="search-area">
+          <i class="fas fa-search"></i>
+          <input type="text" class="search-input" placeholder="搜索邯郸特色美食" />
+          <i class="fas fa-sliders-h"></i>
+        </div>
+        <div class="filters">
+          <div class="filter-tag active">全部美食</div>
+          <div class="filter-tag">特色小吃</div>
+          <div class="filter-tag">地方菜系</div>
+          <div class="filter-tag">宴席美食</div>
+          <div class="filter-tag">时令美食</div>
+          <div class="filter-tag">文化名菜</div>
+        </div>
+      </div>
+
+      <div class="content">
+        <h2 class="page-title">当季推荐</h2>
+
+        <div class="food-item" data-food-id="1">
+          <div class="food-image">
+            <img src="./img/麻糖.jpg" alt="邯郸麻糖" />
+          </div>
+          <div class="food-info">
+            <div class="food-name">邯郸麻糖</div>
+            <div class="food-desc">邯郸传统小吃，外酥内软，甜而不腻，用优质芝麻、红糖和面粉精制而成。</div>
+            <div class="food-meta">
+              <div class="food-price">¥15/份</div>
+              <div class="food-distance"><i class="fas fa-map-marker-alt"></i> 0.8km</div>
+            </div>
+            <div class="food-tags">
+              <div class="food-tag">传统小吃</div>
+              <div class="food-tag">甜品</div>
+            </div>
+          </div>
+          <div class="cultural-tag"><i class="fas fa-bookmark"></i> 非遗美食</div>
+        </div>
+
+        <div class="food-item" data-food-id="2">
+          <div class="food-image">
+            <img src="./img/武安卷饼.jpg" alt="武安卷饼" />
+          </div>
+          <div class="food-info">
+            <div class="food-name">武安卷饼</div>
+            <div class="food-desc">武安传统面食，薄如纸，筋道爽口，配以特制调料和时令蔬菜，百吃不厌。</div>
+            <div class="food-meta">
+              <div class="food-price">¥12/份</div>
+              <div class="food-distance"><i class="fas fa-map-marker-alt"></i> 1.2km</div>
+            </div>
+            <div class="food-tags">
+              <div class="food-tag">面食</div>
+              <div class="food-tag">早餐</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <h2 class="page-title">文化名菜</h2>
+
+        <div class="food-item" data-food-id="3">
+          <div class="food-image">
+            <img src="https://img.freepik.com/free-photo/chinese-banquet-table_1150-16284.jpg" alt="赵王宴席" />
+          </div>
+          <div class="food-info">
+            <div class="food-name">赵王宴席</div>
+            <div class="food-desc">复原赵国宫廷宴席，融合古今烹饪技艺，精选当地食材，展现燕赵饮食文化。</div>
+            <div class="food-meta">
+              <div class="food-price">¥288/桌起</div>
+              <div class="food-distance"><i class="fas fa-map-marker-alt"></i> 2.5km</div>
+            </div>
+            <div class="food-tags">
+              <div class="food-tag">宫廷菜</div>
+              <div class="food-tag">宴席</div>
+            </div>
+          </div>
+          <div class="cultural-tag"><i class="fas fa-bookmark"></i> 文化体验</div>
+        </div>
+
+        <div class="food-item" data-food-id="4">
+          <div class="food-image">
+            <img src="https://img.freepik.com/free-photo/chinese-banquet-with-wine_1150-16283.jpg" alt="丛台酒宴" />
+          </div>
+          <div class="food-info">
+            <div class="food-name">丛台酒宴</div>
+            <div class="food-desc">源自战国时期赵王与群臣在丛台畅饮的典故，特色菜品配以地方美酒，体验古代饮宴文化。</div>
+            <div class="food-meta">
+              <div class="food-price">¥366/桌起</div>
+              <div class="food-distance"><i class="fas fa-map-marker-alt"></i> 3.1km</div>
+            </div>
+            <div class="food-tags">
+              <div class="food-tag">酒文化</div>
+              <div class="food-tag">宴席</div>
+            </div>
+          </div>
+          <div class="cultural-tag"><i class="fas fa-bookmark"></i> 文化体验</div>
+        </div>
+      </div>
+
+      <div class="food-map-btn" id="mapBtn">
+        <i class="fas fa-map-marked-alt"></i>
+      </div>
+
+      <!-- 底部导航 -->
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="switchTab('首页')">
+          <div class="nav-icon">🏠</div>
+          <div class="nav-name">首页</div>
+        </div>
+        <div class="nav-item active" onclick="switchTab('景点')">
+          <div class="nav-icon">🗿</div>
+          <div class="nav-name">景点</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('文化')">
+          <div class="nav-icon">📚</div>
+          <div class="nav-name">文化</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('文化')">
+          <div class="nav-icon">📱</div>
+          <div class="nav-name">商场</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('行程')">
+          <div class="nav-icon">🗺️</div>
+          <div class="nav-name">行程</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('我的')">
+          <div class="nav-icon">👤</div>
+          <div class="nav-name">我的</div>
+        </div>
+      </div>
+
+      <!-- 装饰元素 -->
+      <div class="decoration decoration-1"></div>
+      <div class="decoration decoration-2"></div>
+    </div>
+
+    <!-- 模态框 -->
+    <div class="modal" id="foodModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="modalFoodName">美食详情</h3>
+          <span class="close-btn" id="closeModal">&times;</span>
+        </div>
+        <div class="modal-body">
+          <div class="modal-image">
+            <img id="modalFoodImage" src="" alt="" />
+          </div>
+          <div class="modal-title" id="modalFoodTitle"></div>
+          <div class="modal-description" id="modalFoodDesc"></div>
+          <div class="modal-tags" id="modalFoodTags"></div>
+          <div class="food-meta">
+            <div class="food-price" id="modalFoodPrice"></div>
+            <div class="food-distance" id="modalFoodDistance"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="modal-btn modal-btn-secondary" id="shareBtn"><i class="fas fa-share-alt"></i> 分享</button>
+          <button class="modal-btn modal-btn-primary" id="navigateBtn"><i class="fas fa-directions"></i> 导航</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 地图模态框 -->
+    <div class="modal" id="mapModal">
+      <div class="modal-content" style="max-width: 350px">
+        <div class="modal-header">
+          <h3>美食地图</h3>
+          <span class="close-btn" id="closeMapModal">&times;</span>
+        </div>
+        <div class="modal-body">
+          <div class="modal-image" style="height: 200px; background-color: #f0f0f0; display: flex; justify-content: center; align-items: center">
+            <i class="fas fa-map" style="font-size: 50px; color: #3e7d6b"></i>
+          </div>
+          <div class="modal-description">这里将显示附近美食的地图位置。点击标记可以查看详情。</div>
+        </div>
+        <div class="modal-footer">
+          <button class="modal-btn modal-btn-primary" id="useCurrentLocation"><i class="fas fa-location-arrow"></i> 使用当前位置</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function switchTab(tab) {
+        window.location.href = tab + '.html'
+      }
+
+      // 页面加载时自动高亮当前页面对应的导航项
+      document.addEventListener('DOMContentLoaded', () => {
+        const currentPage = window.location.pathname.split('/').pop().split('.')[0] // 获取当前文件名（不含后缀）
+        const navItems = document.querySelectorAll('.nav-item')
+
+        navItems.forEach((item) => {
+          const tab = item.getAttribute('onclick')?.match(/'(.+?)'/)?.[1]
+
+          if (tab === currentPage) {
+            item.classList.add('active')
+          }
+
+          item.addEventListener('click', () => {
+            navItems.forEach((i) => i.classList.remove('active'))
+            item.classList.add('active')
+          })
+        })
+      })
+
+      // 等待DOM加载完成
+      document.addEventListener('DOMContentLoaded', function () {
+        // 获取所有美食项
+        const foodItems = document.querySelectorAll('.food-item')
+        // 获取模态框元素
+        const foodModal = document.getElementById('foodModal')
+        const mapModal = document.getElementById('mapModal')
+        // 获取关闭按钮
+        const closeModal = document.getElementById('closeModal')
+        const closeMapModal = document.getElementById('closeMapModal')
+        // 获取地图按钮
+        const mapBtn = document.getElementById('mapBtn')
+        // 获取筛选标签
+        const filterTags = document.querySelectorAll('.filter-tag')
+
+        // 美食数据
+        const foodData = {
+          1: {
+            name: '邯郸麻糖',
+            image: 'https://img.freepik.com/free-photo/chinese-traditional-sesame-candy_1150-16286.jpg',
+            desc: '邯郸麻糖是河北省邯郸市的传统名点，已有2000多年的历史。以优质芝麻、红糖和面粉为主要原料，经过多道工序精制而成。外酥内软，甜而不腻，具有浓郁的芝麻香味。邯郸麻糖不仅是当地人的日常零食，也是逢年过节赠送亲友的传统礼品。2010年被列入邯郸市非物质文化遗产名录。',
+            price: '¥15/份',
+            distance: "<i class='fas fa-map-marker-alt'></i> 0.8km",
+            tags: ['传统小吃', '甜品', '非遗美食'],
+            cultural: true
+          },
+          2: {
+            name: '武安卷饼',
+            image: 'https://img.freepik.com/free-photo/chinese-pancake-with-vegetables_1150-16285.jpg',
+            desc: '武安卷饼是邯郸武安地区的特色面食，已有数百年历史。制作工艺讲究，面皮薄如纸，筋道爽口。传统吃法是配以特制酱料、时令蔬菜和卤肉，卷起来食用。武安卷饼的特点是面皮薄而不破，口感筋道有嚼劲，酱料咸香适口，可根据个人口味添加辣椒、蒜泥等调料。是当地人早餐和夜宵的首选。',
+            price: '¥12/份',
+            distance: "<i class='fas fa-map-marker-alt'></i> 1.2km",
+            tags: ['面食', '早餐', '特色小吃'],
+            cultural: false
+          },
+          3: {
+            name: '赵王宴席',
+            image: 'https://img.freepik.com/free-photo/chinese-banquet-table_1150-16284.jpg',
+            desc: "赵王宴席是根据历史文献复原的赵国宫廷宴席，融合古今烹饪技艺，精选当地优质食材。宴席包括前菜、主菜、汤品、点心等十余道菜品，每道菜都有其历史典故和文化内涵。如'完璧归赵'用鲍鱼和玉兰片制作，'负荆请罪'以荆芥和羊肉为原料。宴席不仅味美，更能体验战国时期赵国的饮食文化。",
+            price: '¥288/桌起',
+            distance: "<i class='fas fa-map-marker-alt'></i> 2.5km",
+            tags: ['宫廷菜', '宴席', '文化体验'],
+            cultural: true
+          },
+          4: {
+            name: '丛台酒宴',
+            image: 'https://img.freepik.com/free-photo/chinese-banquet-with-wine_1150-16283.jpg',
+            desc: "丛台酒宴源自战国时期赵王与群臣在丛台畅饮的典故。宴席以邯郸当地美酒'丛台酒'为特色，配以精心烹制的下酒菜肴。菜品包括'将相和'(鱼羊鲜)、'胡服骑射'(烤羊腿)、'完璧归赵'(海鲜拼盘)等，每道菜都与赵国历史典故相关。用餐时还有古乐表演和酒文化讲解，是体验邯郸酒文化的绝佳选择。",
+            price: '¥366/桌起',
+            distance: "<i class='fas fa-map-marker-alt'></i> 3.1km",
+            tags: ['酒文化', '宴席', '文化体验'],
+            cultural: true
+          }
+        }
+
+        // 为每个美食项添加点击事件
+        foodItems.forEach((item) => {
+          item.addEventListener('click', function () {
+            const foodId = this.getAttribute('data-food-id')
+            const food = foodData[foodId]
+
+            // 填充模态框内容
+            document.getElementById('modalFoodName').textContent = food.name
+            document.getElementById('modalFoodTitle').textContent = food.name
+            document.getElementById('modalFoodImage').src = food.image
+            document.getElementById('modalFoodImage').alt = food.name
+            document.getElementById('modalFoodDesc').textContent = food.desc
+            document.getElementById('modalFoodPrice').innerHTML = food.price
+            document.getElementById('modalFoodDistance').innerHTML = food.distance
+
+            // 清空并重新填充标签
+            const tagsContainer = document.getElementById('modalFoodTags')
+            tagsContainer.innerHTML = ''
+            food.tags.forEach((tag) => {
+              const tagElement = document.createElement('div')
+              tagElement.className = 'modal-tag'
+              tagElement.textContent = tag
+              tagsContainer.appendChild(tagElement)
+            })
+
+            // 显示模态框
+            foodModal.style.display = 'flex'
+          })
+        })
+
+        // 关闭模态框
+        closeModal.addEventListener('click', function () {
+          foodModal.style.display = 'none'
+        })
+
+        closeMapModal.addEventListener('click', function () {
+          mapModal.style.display = 'none'
+        })
+
+        // 点击模态框外部关闭
+        window.addEventListener('click', function (event) {
+          if (event.target === foodModal) {
+            foodModal.style.display = 'none'
+          }
+          if (event.target === mapModal) {
+            mapModal.style.display = 'none'
+          }
+        })
+
+        // 地图按钮点击事件
+        mapBtn.addEventListener('click', function () {
+          mapModal.style.display = 'flex'
+        })
+
+        // 筛选标签点击事件
+        filterTags.forEach((tag) => {
+          tag.addEventListener('click', function () {
+            // 移除所有标签的active类
+            filterTags.forEach((t) => t.classList.remove('active'))
+            // 为当前点击的标签添加active类
+            this.classList.add('active')
+
+            // 模拟筛选效果 - 实际应用中这里应该是AJAX请求
+            const filterType = this.textContent
+            alert(`正在筛选: ${filterType}`)
+          })
+        })
+
+        // 导航栏点击事件
+        const navItems = document.querySelectorAll('.nav-item')
+        navItems.forEach((item) => {
+          item.addEventListener('click', function () {
+            navItems.forEach((nav) => nav.classList.remove('active'))
+            this.classList.add('active')
+
+            // 模拟页面切换效果
+            const pageName = this.querySelector('span').textContent
+            alert(`正在切换到 ${pageName} 页面...`)
+          })
+        })
+
+        // 搜索框输入事件
+        const searchInput = document.querySelector('.search-input')
+        searchInput.addEventListener('input', function () {
+          // 实际应用中这里应该是实时搜索
+          if (this.value.length > 0) {
+            console.log(` 搜索: ${this.value}`)
+          }
+        })
+      })
+    </script>
+  </body>
+</html>

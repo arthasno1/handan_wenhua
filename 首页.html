@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>《燕赵冀》APP首页界面设计图</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet" />
+    <style type="text/tailwindcss">
+      /* 底部导航 */
+      .bottom-nav {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-around;
+        padding: 10px 0;
+        background: white;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+      }
+
+      .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .nav-icon {
+        width: 24px;
+        height: 24px;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        transition: all 0.2s;
+      }
+
+      .nav-name {
+        font-size: 12px;
+        transition: all 0.2s;
+      }
+
+      .nav-item.active {
+        color: #9d2933;
+      }
+
+      .nav-item:not(.active) {
+        color: #999;
+      }
+
+      .nav-item:not(.active):hover {
+        color: #666;
+      }
+
+      .nav-item:hover .nav-icon {
+        transform: scale(1.1);
+      }
+    </style>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'bronze-green': '#3E7D6B',
+              'zhao-red': '#9d2933',
+              'zhao-black': '#333333',
+              'chuntai-white': '#F8F8F8',
+              'xiangdong-blue': '#4A90E2',
+              'chuntai-green': '#60997B',
+              cizhou: '#F2C94C'
+            },
+            fontFamily: {
+              sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif']
+            }
+          }
+        }
+      }
+    </script>
+  </head>
+  <body class="bg-gray-100 min-h-screen flex flex-col items-center p-5">
+    <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl overflow-hidden relative">
+      <!-- 状态栏 -->
+      <div class="flex justify-between items-center px-6 py-3 text-sm text-gray-600 border-b border-gray-100">
+        <div class="font-medium">9:41</div>
+        <div class="flex items-center space-x-2">
+          <i class="fa fa-signal"></i>
+          <i class="fa fa-wifi"></i>
+          <i class="fa fa-battery-full"></i>
+        </div>
+      </div>
+
+      <!-- 顶部导航 -->
+      <header class="p-4 border-b border-gray-100">
+        <div class="flex justify-between items-center mb-4">
+          <div class="flex items-center">
+            <span class="text-lg font-semibold">邯郸市</span>
+            <i class="fa fa-chevron-down ml-1 text-xs text-gray-500"></i>
+          </div>
+          <div class="flex space-x-4">
+            <button class="text-gray-500 hover:text-zhao-red transition-colors">
+              <i class="fa fa-bell-o"></i>
+            </button>
+            <button class="text-gray-500 hover:text-zhao-red transition-colors">
+              <i class="fa fa-user-o"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="relative">
+          <input type="text" placeholder="搜索景点、文化、活动" class="w-full bg-gray-100 rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-zhao-red/30 transition-all" />
+          <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+        </div>
+      </header>
+
+      <!-- 轮播图区域 -->
+      <section class="relative h-64 overflow-hidden">
+        <div id="carousel" class="h-full">
+          <div class="carousel-item absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-100">
+            <img src="img/首页1.jpg?random=1" alt="春季丛台公园" class="w-full h-full object-cover" />
+            <div class="absolute inset-0 banner-gradient flex flex-col justify-end p-4">
+              <h3 class="text-white font-semibold text-lg">2025春季丛台公园赏花指南</h3>
+              <p class="text-white/80 text-sm">早春花卉盛开，邀您共赏</p>
+            </div>
+          </div>
+          <div class="carousel-item absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0">
+            <img src="img/首页2.jpg??random=2" alt="邯郸古建筑" class="w-full h-full object-cover" />
+            <div class="absolute inset-0 banner-gradient flex flex-col justify-end p-4">
+              <h3 class="text-white font-semibold text-lg">邯郸古建筑群探秘</h3>
+              <p class="text-white/80 text-sm">感受千年历史文化底蕴</p>
+            </div>
+          </div>
+          <div class="carousel-item absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0">
+            <img src="img/首页3.jpg??random=3" alt="磁州窑文化" class="w-full h-full object-cover" />
+            <div class="absolute inset-0 banner-gradient flex flex-col justify-end p-4">
+              <h3 class="text-white font-semibold text-lg">磁州窑文化体验之旅</h3>
+              <p class="text-white/80 text-sm">亲手制作传统陶瓷艺术品</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 轮播指示器 -->
+        <div class="absolute bottom-4 right-4 flex space-x-2">
+          <button class="w-2 h-2 rounded-full bg-white opacity-100 carousel-dot active"></button>
+          <button class="w-2 h-2 rounded-full bg-white opacity-50 carousel-dot"></button>
+          <button class="w-2 h-2 rounded-full bg-white opacity-50 carousel-dot"></button>
+        </div>
+      </section>
+
+      <!-- 功能导航区 -->
+      <section class="p-4 grid grid-cols-4 gap-4">
+        <div class="feature-item text-center" onclick="switchTab('赵王虎符')">
+          <div class="w-12 h-12 rounded-full bg-bronze-green flex items-center justify-center mx-auto mb-2 feature-icon-hover">
+            <i class="fa fa-university text-white"></i>
+          </div>
+          <span class="text-xs text-gray-700">文化探索</span>
+        </div>
+        <div class="feature-item text-center">
+          <div class="w-12 h-12 rounded-full bg-xiangdong-blue flex items-center justify-center mx-auto mb-2 feature-icon-hover">
+            <i class="fa fa-map-marker text-white"></i>
+          </div>
+          <span class="text-xs text-gray-700">景点推荐</span>
+        </div>
+        <div class="feature-item text-center">
+          <div class="w-12 h-12 rounded-full bg-chuntai-green flex items-center justify-center mx-auto mb-2 feature-icon-hover">
+            <i class="fa fa-compass text-white"></i>
+          </div>
+          <span class="text-xs text-gray-700">精品路线</span>
+        </div>
+        <div class="feature-item text-center">
+          <div class="w-12 h-12 rounded-full bg-zhao-red flex items-center justify-center mx-auto mb-2 feature-icon-hover">
+            <i class="fa fa-cutlery text-white"></i>
+          </div>
+          <span class="text-xs text-gray-700">美食品鉴</span>
+        </div>
+        <div class="feature-item text-center">
+          <div class="w-12 h-12 rounded-full bg-bronze-green flex items-center justify-center mx-auto mb-2 feature-icon-hover">
+            <i class="fa fa-hotel text-white"></i>
+          </div>
+          <span class="text-xs text-gray-700">住宿推荐</span>
+        </div>
+        <div class="feature-item text-center">
+          <div class="w-12 h-12 rounded-full bg-cizhou flex items-center justify-center mx-auto mb-2 feature-icon-hover">
+            <i class="fa fa-star text-white"></i>
+          </div>
+          <span class="text-xs text-gray-700">特色体验</span>
+        </div>
+        <div class="feature-item text-center">
+          <div class="w-12 h-12 rounded-full bg-xiangdong-blue flex items-center justify-center mx-auto mb-2 feature-icon-hover">
+            <i class="fa fa-ticket text-white"></i>
+          </div>
+          <span class="text-xs text-gray-700">购票服务</span>
+        </div>
+        <div class="feature-item text-center">
+          <div class="w-12 h-12 rounded-full bg-zhao-black flex items-center justify-center mx-auto mb-2 feature-icon-hover">
+            <i class="fa fa-ellipsis-h text-white"></i>
+          </div>
+          <span class="text-xs text-gray-700">更多服务</span>
+        </div>
+      </section>
+
+      <!-- 景点推荐 -->
+      <section class="p-4">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="font-semibold text-lg">景点推荐</h2>
+          <button class="text-gray-500 text-sm hover:text-zhao-red transition-colors">更多 <i class="fa fa-angle-right ml-1"></i></button>
+        </div>
+
+        <div class="flex space-x-3 overflow-x-auto pb-4 scrollbar-hide">
+          <div class="w-36 flex-shrink-0 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow">
+            <div class="h-24 relative">
+              <img src="img/赵州桥1.jpg" alt="赵州桥" class="w-full h-full object-cover" />
+              <div class="absolute top-2 right-2 bg-white/90 rounded-full px-2 py-1 text-xs font-medium flex items-center"><i class="fa fa-star text-cizhou text-xs mr-1"></i> 4.9</div>
+            </div>
+            <div class="p-2">
+              <h3 class="font-medium text-sm">赵州桥</h3>
+              <p class="text-xs text-gray-500 mt-1">世界最早石拱桥</p>
+            </div>
+          </div>
+
+          <div class="w-36 flex-shrink-0 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow">
+            <div class="h-24 relative">
+              <img src="img/我的游记2.jpg" alt="正定古城" class="w-full h-full object-cover" />
+              <div class="absolute top-2 right-2 bg-white/90 rounded-full px-2 py-1 text-xs font-medium flex items-center"><i class="fa fa-star text-cizhou text-xs mr-1"></i> 4.7</div>
+            </div>
+            <div class="p-2">
+              <h3 class="font-medium text-sm">正定古城</h3>
+              <p class="text-xs text-gray-500 mt-1">历史文化名城</p>
+            </div>
+          </div>
+
+          <div class="w-36 flex-shrink-0 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow">
+            <div class="h-24 relative">
+              <img src="img/响堂山石窟.png" alt="响堂山石窟" class="w-full h-full object-cover" />
+              <div class="absolute top-2 right-2 bg-white/90 rounded-full px-2 py-1 text-xs font-medium flex items-center"><i class="fa fa-star text-cizhou text-xs mr-1"></i> 4.8</div>
+            </div>
+            <div class="p-2">
+              <h3 class="font-medium text-sm">响堂山石窟</h3>
+              <p class="text-xs text-gray-500 mt-1">北朝佛教艺术</p>
+            </div>
+          </div>
+
+          <div class="w-36 flex-shrink-0 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow">
+            <div class="h-24 relative">
+              <img src="https://picsum.photos/300/200?random=13" alt="娲皇宫" class="w-full h-full object-cover" />
+              <div class="absolute top-2 right-2 bg-white/90 rounded-full px-2 py-1 text-xs font-medium flex items-center"><i class="fa fa-star text-cizhou text-xs mr-1"></i> 4.6</div>
+            </div>
+            <div class="p-2">
+              <h3 class="font-medium text-sm">娲皇宫</h3>
+              <p class="text-xs text-gray-500 mt-1">女娲文化圣地</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 文化热点 -->
+      <section class="p-4 pb-20">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="font-semibold text-lg">文化热点</h2>
+          <button class="text-gray-500 text-sm hover:text-zhao-red transition-colors">更多 <i class="fa fa-angle-right ml-1"></i></button>
+        </div>
+
+        <div class="space-y-3">
+          <div class="flex rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow bg-white">
+            <img src="https://picsum.photos/100/100?random=20" alt="邯郸学步" class="w-20 h-20 object-cover" />
+            <div class="flex-1 p-3">
+              <h3 class="font-medium text-sm line-clamp-2">邯郸学步与赵文化的智慧：从成语看古人的学习态度</h3>
+              <div class="flex items-center mt-2 text-xs text-gray-500"><i class="fa fa-eye mr-1"></i> 阅读 2345</div>
+            </div>
+          </div>
+
+          <div class="flex rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow bg-white">
+            <img src="https://picsum.photos/100/100?random=21" alt="磁州窑" class="w-20 h-20 object-cover" />
+            <div class="flex-1 p-3">
+              <h3 class="font-medium text-sm line-clamp-2">磁州窑的八百年窑火传承：中国传统陶瓷艺术的瑰宝</h3>
+              <div class="flex items-center mt-2 text-xs text-gray-500"><i class="fa fa-eye mr-1"></i> 阅读 1826</div>
+            </div>
+          </div>
+
+          <div class="flex rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow bg-white">
+            <img src="https://picsum.photos/100/100?random=22" alt="太极拳" class="w-20 h-20 object-cover" />
+            <div class="flex-1 p-3">
+              <h3 class="font-medium text-sm line-clamp-2">永年太极拳：从传统武术到世界非遗的蜕变之路</h3>
+              <div class="flex items-center mt-2 text-xs text-gray-500"><i class="fa fa-eye mr-1"></i> 阅读 1563</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 底部导航 -->
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="switchTab('首页')">
+          <div class="nav-icon">🏠</div>
+          <div class="nav-name">首页</div>
+        </div>
+        <div class="nav-item active" onclick="switchTab('景点')">
+          <div class="nav-icon">🗿</div>
+          <div class="nav-name">景点</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('文化')">
+          <div class="nav-icon">📚</div>
+          <div class="nav-name">文化</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('文创商城')">
+          <div class="nav-icon">📱</div>
+          <div class="nav-name">商场</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('行程')">
+          <div class="nav-icon">🗺️</div>
+          <div class="nav-name">行程</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('我的')">
+          <div class="nav-icon">👤</div>
+          <div class="nav-name">我的</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function switchTab(tab) {
+        window.location.href = tab + '.html'
+      }
+
+      // 页面加载时自动高亮当前页面对应的导航项
+      document.addEventListener('DOMContentLoaded', () => {
+        const currentPage = window.location.pathname.split('/').pop().split('.')[0] // 获取当前文件名（不含后缀）
+        const navItems = document.querySelectorAll('.nav-item')
+
+        navItems.forEach((item) => {
+          const tab = item.getAttribute('onclick')?.match(/'(.+?)'/)?.[1]
+
+          if (tab === currentPage) {
+            item.classList.add('active')
+          }
+
+          item.addEventListener('click', () => {
+            navItems.forEach((i) => i.classList.remove('active'))
+            item.classList.add('active')
+          })
+        })
+      })
+      // 底部导航点击跳转（示例，可根据实际需求扩展）
+      const navLinks = document.querySelectorAll('nav a')
+      navLinks.forEach((link) => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault() // 阻止默认跳转（如需保留链接功能可删除此行）
+          window.location.href = link.href // 直接跳转
+        })
+      })
+
+      // 轮播图自动切换
+      document.addEventListener('DOMContentLoaded', function () {
+        const carousel = document.getElementById('carousel')
+        const items = document.querySelectorAll('.carousel-item')
+        const dots = document.querySelectorAll('.carousel-dot')
+        let currentIndex = 0
+
+        // 设置自动轮播
+        setInterval(() => {
+          goToSlide((currentIndex + 1) % items.length)
+        }, 4000)
+
+        // 点击指示器切换轮播
+        dots.forEach((dot, index) => {
+          dot.addEventListener('click', () => {
+            goToSlide(index)
+          })
+        })
+
+        function goToSlide(index) {
+          // 隐藏当前轮播项
+          items[currentIndex].classList.remove('opacity-100')
+          items[currentIndex].classList.add('opacity-0')
+          dots[currentIndex].classList.remove('opacity-100')
+          dots[currentIndex].classList.add('opacity-50')
+
+          // 显示目标轮播项
+          items[index].classList.remove('opacity-0')
+          items[index].classList.add('opacity-100')
+          dots[index].classList.remove('opacity-50')
+          dots[index].classList.add('opacity-100')
+
+          currentIndex = index
+        }
+
+        // 底部导航交互
+        const navItems = document.querySelectorAll('nav a')
+        navItems.forEach((item) => {
+          item.addEventListener('click', function (e) {
+            e.preventDefault()
+
+            // 移除所有激活状态
+            navItems.forEach((i) => {
+              i.classList.remove('text-zhao-red')
+              i.classList.add('text-gray-500')
+            })
+
+            // 添加当前激活状态
+            this.classList.remove('text-gray-500')
+            this.classList.add('text-zhao-red')
+          })
+        })
+      })
+    </script>
+  </body>
+</html>

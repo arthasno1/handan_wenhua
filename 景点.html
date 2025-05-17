@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>图4-8 《燕赵冀》APP景点模块界面设计图</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto;
+      }
+
+      body {
+        background-color: #f5f5f5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+
+      .phone-container {
+        width: 100%;
+        max-width: 420px;
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 20px;
+        margin: 0 auto;
+      }
+
+      .phone-screen {
+        position: relative;
+        width: 100%;
+        /* 16:9 比例 */
+        background: #ffffff;
+        border-radius: 30px;
+        overflow: hidden;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      /* 状态栏 */
+      .status-bar {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 16px 8px;
+        font-size: 14px;
+      }
+
+      .status-bar .time {
+        font-weight: 500;
+      }
+
+      .status-bar .icons {
+        display: flex;
+        gap: 6px;
+      }
+
+      /* 顶部导航 */
+      .header {
+        padding: 10px 16px 15px;
+        background: #fff;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      }
+
+      .nav-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .page-title {
+        font-size: 22px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .icons-right {
+        display: flex;
+        gap: 15px;
+      }
+
+      .icons-right span {
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+
+      .icons-right span:hover {
+        transform: scale(1.1);
+      }
+
+      /* 分类选项卡 */
+      .tabs-container {
+        padding: 12px 16px;
+        background: white;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+
+      .tabs {
+        display: inline-flex;
+        gap: 12px;
+      }
+
+      .tab {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 14px;
+        color: #666;
+        background: #f5f5f5;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .tab:hover {
+        background: #e0e0e0;
+      }
+
+      .tab.active {
+        background: #9d2933;
+        color: white;
+      }
+
+      /* 内容区域 */
+      .content {
+        height: calc(100% - 155px);
+        overflow-y: auto;
+        padding: 16px;
+      }
+
+      /* 景点卡片 */
+      .spot-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+      }
+
+      .spot-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+      }
+
+      .spot-image {
+        position: relative;
+        height: 180px;
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 16px;
+      }
+
+      .image-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 16px;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+        color: white;
+      }
+
+      .spot-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+
+      .spot-rating {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .stars {
+        display: flex;
+      }
+
+      .star {
+        color: #f2c94c;
+        font-size: 14px;
+      }
+
+      .spot-content {
+        padding: 16px;
+      }
+
+      .spot-meta {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+
+      .spot-location {
+        color: #666;
+        font-size: 14px;
+      }
+
+      .spot-price {
+        color: #9d2933;
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      .spot-desc {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.5;
+        margin-bottom: 12px;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .tag {
+        padding: 4px 10px;
+        background: #f5f5f5;
+        border-radius: 20px;
+        font-size: 12px;
+        color: #666;
+        transition: all 0.2s;
+      }
+
+      .tag:hover {
+        background: #e0e0e0;
+      }
+
+      /* 底部导航 */
+      .bottom-nav {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-around;
+        padding: 10px 0;
+        background: white;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+      }
+
+      .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .nav-icon {
+        width: 24px;
+        height: 24px;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        transition: all 0.2s;
+      }
+
+      .nav-name {
+        font-size: 12px;
+        transition: all 0.2s;
+      }
+
+      .nav-item.active {
+        color: #9d2933;
+      }
+
+      .nav-item:not(.active) {
+        color: #999;
+      }
+
+      .nav-item:not(.active):hover {
+        color: #666;
+      }
+
+      .nav-item:hover .nav-icon {
+        transform: scale(1.1);
+      }
+
+      /* 滚动条样式 */
+      .content::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .content::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+
+      .content::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 3px;
+      }
+
+      .content::-webkit-scrollbar-thumb:hover {
+        background: #999;
+      }
+
+      /* 加载动画 */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .spot-card {
+        animation: fadeIn 0.5s ease forwards;
+        opacity: 0;
+      }
+
+      .spot-card:nth-child(1) {
+        animation-delay: 0.1s;
+      }
+      .spot-card:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .spot-card:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 min-h-screen flex flex-col items-center p-5">
+    <div class="phone-container">
+      <div class="phone-screen">
+        <!-- 状态栏 -->
+        <div class="status-bar">
+          <div class="time" id="current-time">9:41</div>
+          <div class="icons">
+            <span>📶</span>
+            <span>🔋</span>
+          </div>
+        </div>
+
+        <!-- 顶部导航 -->
+        <div class="header">
+          <div class="nav-top">
+            <div class="page-title">景点</div>
+            <div class="icons-right">
+              <span title="日历">📅</span>
+              <span title="搜索">🔍</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 分类选项卡 -->
+        <div class="tabs-container">
+          <div class="tabs">
+            <div class="tab active" onclick="filterSpots('all')">全部景点</div>
+            <div class="tab" onclick="filterSpots('history')">历史文化</div>
+            <div class="tab" onclick="filterSpots('nature')">自然风光</div>
+            <div class="tab" onclick="filterSpots('culture')">人文艺术</div>
+            <div class="tab" onclick="filterSpots('folk')">民俗体验</div>
+          </div>
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="content" id="spots-container">
+          <!-- 景点卡片1 -->
+          <div class="spot-card" data-category="history">
+            <div class="spot-image" style="background-image: url('img/景点1.jpg')" onclick="switchTab('景点1赵州桥') ">
+              <div class="image-overlay">
+                <div class="spot-title">赵州桥</div>
+                <div class="spot-rating">
+                  <div class="stars">
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                  </div>
+                  <span>4.9</span>
+                </div>
+              </div>
+            </div>
+            <div class="spot-content">
+              <div class="spot-meta">
+                <div class="spot-location">石家庄市赵县</div>
+                <div class="spot-price">60元</div>
+              </div>
+              <div class="spot-desc">世界上现存最早、保存最完整的敞肩式石拱桥，被誉为"中国古代四大发明之一"。建于隋朝（公元595-605年），至今已有1400多年历史。</div>
+              <div class="tags">
+                <div class="tag">世界文化遗产</div>
+                <div class="tag">建筑奇观</div>
+                <div class="tag">历史遗迹</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 景点卡片2 -->
+          <div class="spot-card" data-category="history">
+            <div class="spot-image" style="background-image: url('./img/景点2.jpg')">
+              <div class="image-overlay">
+                <div class="spot-title">正定古城</div>
+                <div class="spot-rating">
+                  <div class="stars">
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">☆</span>
+                  </div>
+                  <span>4.7</span>
+                </div>
+              </div>
+            </div>
+            <div class="spot-content">
+              <div class="spot-meta">
+                <div class="spot-location">石家庄市正定县</div>
+                <div class="spot-price">免费</div>
+              </div>
+              <div class="spot-desc">国家历史文化名城，北方著名的古城，有"北方第一城"的美誉。保存有隆兴寺、开元寺、临济寺等众多文物古迹。</div>
+              <div class="tags">
+                <div class="tag">古城</div>
+                <div class="tag">文化遗产</div>
+                <div class="tag">古建筑</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 景点卡片3 -->
+          <div class="spot-card" data-category="culture">
+            <div class="spot-image" style="background-image: url('img/景点3.jpg')">
+              <div class="image-overlay">
+                <div class="spot-title">响堂山石窟</div>
+                <div class="spot-rating">
+                  <div class="stars">
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                  </div>
+                  <span>4.8</span>
+                </div>
+              </div>
+            </div>
+            <div class="spot-content">
+              <div class="spot-meta">
+                <div class="spot-location">邯郸市峰峰矿区</div>
+                <div class="spot-price">80元</div>
+              </div>
+              <div class="spot-desc">北朝时期重要的佛教石窟，与云冈石窟、龙门石窟、麦积山石窟并称为"中国四大石窟"，以精美的石刻造像和壁画闻名。</div>
+              <div class="tags">
+                <div class="tag">石窟</div>
+                <div class="tag">佛教艺术</div>
+                <div class="tag">国家重点文物</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 底部导航 -->
+        <div class="bottom-nav">
+          <div class="nav-item" onclick="switchTab('首页')">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-name">首页</div>
+          </div>
+          <div class="nav-item active" onclick="switchTab('景点')">
+            <div class="nav-icon">🗿</div>
+            <div class="nav-name">景点</div>
+          </div>
+          <div class="nav-item" onclick="switchTab('美食')">
+            <div class="nav-icon">📚</div>
+            <div class="nav-name">美食</div>
+          </div>
+          <div class="nav-item" onclick="switchTab('行程')">
+            <div class="nav-icon">🗺️</div>
+            <div class="nav-name">行程</div>
+          </div>
+          <div class="nav-item" onclick="switchTab('我的')">
+            <div class="nav-icon">👤</div>
+            <div class="nav-name">我的</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // 更新时间
+      function updateTime() {
+        const now = new Date()
+        const hours = now.getHours().toString().padStart(2, '0')
+        const minutes = now.getMinutes().toString().padStart(2, '0')
+        document.getElementById('current-time').textContent = `${hours}:${minutes}`
+      }
+
+      setInterval(updateTime, 1000)
+      updateTime()
+
+      // 景点筛选功能
+      function filterSpots(category) {
+        const tabs = document.querySelectorAll('.tab')
+        tabs.forEach((tab) => tab.classList.remove('active'))
+        event.target.classList.add('active')
+
+        const spots = document.querySelectorAll('.spot-card')
+
+        if (category === 'all') {
+          spots.forEach((spot) => {
+            spot.style.display = 'block'
+          })
+        } else {
+          spots.forEach((spot) => {
+            if (spot.dataset.category === category) {
+              spot.style.display = 'block'
+            } else {
+              spot.style.display = 'none'
+            }
+          })
+        }
+      }
+      function switchTab(tab) {
+        window.location.href = tab + '.html'
+      }
+
+      // 页面加载时自动高亮当前页面对应的导航项
+      document.addEventListener('DOMContentLoaded', () => {
+        const currentPage = window.location.pathname.split('/').pop().split('.')[0] // 获取当前文件名（不含后缀）
+        const navItems = document.querySelectorAll('.nav-item')
+
+        navItems.forEach((item) => {
+          const tab = item.getAttribute('onclick')?.match(/'(.+?)'/)?.[1]
+
+          if (tab === currentPage) {
+            item.classList.add('active')
+          }
+
+          item.addEventListener('click', () => {
+            navItems.forEach((i) => i.classList.remove('active'))
+            item.classList.add('active')
+          })
+        })
+      })
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>《燕赵冀》APP民俗活动界面</title>
+    <style>
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            background: white;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.2s;
+        }
+
+        .nav-name {
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .nav-item.active  {
+            color: #9d2933;
+        }
+
+        .nav-item:not(.active) {
+            color: #999;
+        }
+
+        .nav-item:not(.active):hover {
+            color: #666;
+        }
+
+        .nav-item:hover .nav-icon {
+            transform: scale(1.1);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f8f8f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .phone-container {
+            position: relative;
+            width: 360px;
+            height: 640px;
+            background-color: white;
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .status-bar {
+            height: 24px;
+            background-color: #3E7D6B;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 12px;
+            align-items: center;
+            color: white;
+            font-size: 12px;
+        }
+
+        .header {
+            background-color: #3E7D6B;
+            padding: 12px 15px;
+            color: white;
+        }
+
+        .header-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .month-navigator {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            overflow-x: auto;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+        }
+
+        .month-navigator::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+
+        .month-btn {
+            padding: 2px 10px;
+            font-size: 14px;
+            margin: 0 5px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .month-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .month-btn.active  {
+            background-color: rgba(255, 255, 255, 0.4);
+            font-weight: bold;
+        }
+
+        .calendar {
+            background-color: white;
+            border-radius: 15px 15px 0 0;
+            margin-top: 10px;
+            padding: 15px;
+            position: relative;
+        }
+
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .day {
+            height: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .day:hover {
+            transform: scale(1.1);
+        }
+
+        .day .solar {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .day .lunar {
+            font-size: 10px;
+            color: #888;
+            position: absolute;
+            bottom: -2px;
+        }
+
+        .day.has-event::after  {
+            content: "";
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: #C83932;
+            border-radius: 50%;
+            top: 0;
+            right: 25%;
+        }
+
+        .day.today  {
+            background-color: #3E7D6B;
+            border-radius: 50%;
+            color: white;
+        }
+
+        .day.today  .solar,
+        .day.today  .lunar {
+            color: white;
+        }
+
+        .day.festival  {
+            color: #C83932;
+        }
+
+        .day.festival  .lunar {
+            color: #C83932;
+        }
+
+        .day.selected  {
+            background-color: #3E7D6B;
+            border-radius: 50%;
+            color: white;
+        }
+
+        .day.selected  .solar,
+        .day.selected  .lunar {
+            color: white;
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 15px 15px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            color: #333;
+            margin: 15px 0 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title::before {
+            content: "";
+            width: 3px;
+            height: 16px;
+            background-color: #3E7D6B;
+            margin-right: 8px;
+            border-radius: 3px;
+        }
+
+        .events-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .event-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .event-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .event-card:active {
+            transform: translateY(0);
+        }
+
+        .event-card.festival  {
+            background-color: #FFF5F5;
+            border-left: 4px solid #C83932;
+        }
+
+        .event-card.folklore  {
+            background-color: #FFFBF1;
+            border-left: 4px solid #F2C94C;
+        }
+
+        .event-card.performance  {
+            background-color: #F0FAF6;
+            border-left: 4px solid #3E7D6B;
+        }
+
+        .event-image {
+            width: 80px;
+            height: 80px;
+            background-image: url(img/打树花.png);
+            background-size: cover;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-right: 12px;
+            flex-shrink: 0;
+            position: relative;
+            background-color: #eee;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .event-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .event-date-tag {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .event-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .event-name {
+            font-weight: bold;
+            margin-bottom: 4px;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .event-desc {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .event-meta {
+            display: flex;
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+
+        .event-meta i {
+            margin-right: 4px;
+            font-size: 10px;
+        }
+
+        .event-meta-item {
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+        }
+
+        .event-tag {
+            display: inline-block;
+            padding: 2px 6px;
+            font-size: 10px;
+            border-radius: 4px;
+            margin-right: 5px;
+        }
+
+        .event-tag.festival-tag  {
+            background-color: rgba(200, 57, 50, 0.1);
+            color: #C83932;
+        }
+
+        .event-tag.folklore-tag  {
+            background-color: rgba(242, 201, 76, 0.1);
+            color: #F2C94C;
+        }
+
+        .event-tag.performance-tag  {
+            background-color: rgba(62, 125, 107, 0.1);
+            color: #3E7D6B;
+        }
+
+        .event-reminder {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .event-reminder:hover {
+            transform: scale(1.1);
+        }
+
+        .event-reminder.active  {
+            color: #3E7D6B;
+        }
+
+        .nav-bar {
+            height: 60px;
+            background-color: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #eee;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            color: #999;
+            margin-bottom: 2px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item.active  i {
+            color: #3E7D6B;
+            transform: scale(1.1);
+        }
+
+        .nav-item span {
+            font-size: 10px;
+            color: #999;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item.active  span {
+            color: #3E7D6B;
+            font-weight: bold;
+        }
+
+        /* 传统喜帖装饰风格 */
+        .traditional-border {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .border-top-left {
+            top: 0;
+            left: 0;
+            border-top: 2px solid #C83932;
+            border-left: 2px solid #C83932;
+            border-top-left-radius: 8px;
+        }
+
+        .border-top-right {
+            top: 0;
+            right: 0;
+            border-top: 2px solid #C83932;
+            border-right: 2px solid #C83932;
+            border-top-right-radius: 8px;
+        }
+
+        .border-bottom-left {
+            bottom: 0;
+            left: 0;
+            border-bottom: 2px solid #C83932;
+            border-left: 2px solid #C83932;
+            border-bottom-left-radius: 8px;
+        }
+
+        .border-bottom-right {
+            bottom: 0;
+            right: 0;
+            border-bottom: 2px solid #C83932;
+            border-right: 2px solid #C83932;
+            border-bottom-right-radius: 8px;
+        }
+
+        /* 传统历法风格装饰 */
+        .calendar-decoration {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 100 100"><rect x="5" y="5" width="90" height="90" fill="none" stroke="%233E7D6B" stroke-width="0.5" stroke-dasharray="2,2" opacity="0.1"/></svg>');
+            background-size: 20px 20px;
+            opacity: 0.05;
+            pointer-events: none;
+        }
+
+        /* 活动详情弹窗 */
+        .event-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .event-modal.active  {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background-color: white;
+            width: 320px;
+            max-height: 80vh;
+            border-radius: 15px;
+            overflow: hidden;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .event-modal.active  .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 15px;
+            background-color: #3E7D6B;
+            color: white;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .modal-body {
+            padding: 15px;
+            overflow-y: auto;
+            max-height: 60vh;
+        }
+
+        .modal-image {
+            width: 100%;
+            height: 180px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            background-color: #eee;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #999;
+        }
+
+        .modal-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .modal-date {
+            font-size: 14px;
+            color: #3E7D6B;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .modal-date i {
+            margin-right: 5px;
+        }
+
+        .modal-location {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .modal-location i {
+            margin-right: 5px;
+        }
+
+        .modal-desc {
+            font-size: 14px;
+            color: #444;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .modal-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            font-size: 12px;
+            border-radius: 4px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        .modal-footer {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #eee;
+        }
+
+        .modal-btn {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .modal-btn.primary  {
+            background-color: #3E7D6B;
+            color: white;
+            border: none;
+        }
+
+        .modal-btn.primary:hover  {
+            background-color: #2e5d4f;
+        }
+
+        .modal-btn.secondary  {
+            background-color: white;
+            color: #3E7D6B;
+            border: 1px solid #3E7D6B;
+        }
+
+        .modal-btn.secondary:hover  {
+            background-color: #f0f0f0;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<div class="phone-container">
+    <div class="status-bar">
+        <span>20:25</span>
+        <div>
+            <span><i class="fas fa-signal"></i></span>
+            <span><i class="fas fa-wifi"></i></span>
+            <span><i class="fas fa-battery-three-quarters"></i></span>
+        </div>
+    </div>
+
+    <div class="header">
+        <div class="header-title">
+            <h1 style="font-size: 18px; font-weight: normal;">民俗活动</h1>
+            <i class="fas fa-search"></i>
+        </div>
+        <div class="month-navigator">
+            <div class="month-btn">1月</div>
+            <div class="month-btn">2月</div>
+            <div class="month-btn">3月</div>
+            <div class="month-btn active">4月</div>
+            <div class="month-btn">5月</div>
+            <div class="month-btn">6月</div>
+            <div class="month-btn">7月</div>
+        </div>
+        <div class="calendar">
+            <div class="weekdays">
+                <div>日</div>
+                <div>一</div>
+                <div>二</div>
+                <div>三</div>
+                <div>四</div>
+                <div>五</div>
+                <div>六</div>
+            </div>
+            <div class="days">
+                <div class="day">
+                    <span class="solar"></span>
+                    <span class="lunar"></span>
+                </div>
+                <div class="day">
+                    <span class="solar">1</span>
+                    <span class="lunar">十二</span>
+                </div>
+                <div class="day">
+                    <span class="solar">2</span>
+                    <span class="lunar">十三</span>
+                </div>
+                <div class="day">
+                    <span class="solar">3</span>
+                    <span class="lunar">十四</span>
+                </div>
+                <div class="day">
+                    <span class="solar">4</span>
+                    <span class="lunar">十五</span>
+                </div>
+                <div class="day festival has-event">
+                    <span class="solar">5</span>
+                    <span class="lunar">清明</span>
+                </div>
+                <div class="day">
+                    <span class="solar">6</span>
+                    <span class="lunar">十七</span>
+                </div>
+                <div class="day">
+                    <span class="solar">7</span>
+                    <span class="lunar">十八</span>
+                </div>
+                <div class="day">
+                    <span class="solar">8</span>
+                    <span class="lunar">十九</span>
+                </div>
+                <div class="day">
+                    <span class="solar">9</span>
+                    <span class="lunar">二十</span>
+                </div>
+                <div class="day">
+                    <span class="solar">10</span>
+                    <span class="lunar">廿一</span>
+                </div>
+                <div class="day">
+                    <span class="solar">11</span>
+                    <span class="lunar">廿二</span>
+                </div>
+                <div class="day">
+                    <span class="solar">12</span>
+                    <span class="lunar">廿三</span>
+                </div>
+                <div class="day">
+                    <span class="solar">13</span>
+                    <span class="lunar">廿四</span>
+                </div>
+                <div class="day">
+                    <span class="solar">14</span>
+                    <span class="lunar">廿五</span>
+                </div>
+                <div class="day today">
+                    <span class="solar">15</span>
+                    <span class="lunar">廿六</span>
+                </div>
+                <div class="day">
+                    <span class="solar">16</span>
+                    <span class="lunar">廿七</span>
+                </div>
+                <div class="day">
+                    <span class="solar">17</span>
+                    <span class="lunar">廿八</span>
+                </div>
+                <div class="day has-event">
+                    <span class="solar">18</span>
+                    <span class="lunar">廿九</span>
+                </div>
+                <div class="day">
+                    <span class="solar">19</span>
+                    <span class="lunar">三十</span>
+                </div>
+                <div class="day">
+                    <span class="solar">20</span>
+                    <span class="lunar">初一</span>
+                </div>
+                <div class="day has-event">
+                    <span class="solar">21</span>
+                    <span class="lunar">初二</span>
+                </div>
+            </div>
+            <div class="calendar-decoration"></div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="section-title">近期活动</div>
+        <div class="events-list">
+            <div class="event-card festival" data-event-id="1">
+                <div class="traditional-border border-top-left"></div>
+                <div class="traditional-border border-top-right"></div>
+                <div class="traditional-border border-bottom-left"></div>
+                <div class="traditional-border border-bottom-right"></div>
+
+                <div class="event-image">
+                    <div>清明节民俗活动</div>
+                    <div class="event-date-tag">4月5日</div>
+                </div>
+                <div class="event-info">
+                    <div class="event-name">清明节民俗活动</div>
+                    <div class="event-desc">传统清明习俗展示，包括踏青、扫墓、祭祖、放风筝等清明传统活动。</div>
+                    <div class="event-meta">
+                        <div class="event-meta-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>邯郸各区县</span>
+                        </div>
+                        <div class="event-meta-item">
+                            <i class="fas fa-clock"></i>
+                            <span>全天</span>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="event-tag festival-tag">传统节日</span>
+                    </div>
+                </div>
+                <div class="event-reminder">
+                    <i class="far fa-bell"></i>
+                </div>
+            </div>
+
+            <div class="event-card performance" data-event-id="2">
+                <div class="traditional-border border-top-left"></div>
+                <div class="traditional-border border-top-right"></div>
+                <div class="traditional-border border-bottom-left"></div>
+                <div class="traditional-border border-bottom-right"></div>
+
+                <div class="event-image">
+                    <div>武安打树花表演</div>
+                    <div class="event-date-tag">4月18日</div>
+                </div>
+                <div class="event-info">
+                    <div class="event-name">武安打树花表演</div>
+                    <div class="event-desc">国家级非物质文化遗产，表演者将熔融的铁水抛洒到城墙上，形成绚丽的"火树银花"。</div>
+                    <div class="event-meta">
+                        <div class="event-meta-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>武安市古城墙</span>
+                        </div>
+                        <div class="event-meta-item">
+                            <i class="fas fa-clock"></i>
+                            <span>19:30</span>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="event-tag performance-tag">非遗表演</span>
+                    </div>
+                </div>
+                <div class="event-reminder">
+                    <i class="far fa-bell"></i>
+                </div>
+            </div>
+
+            <div class="event-card folklore" data-event-id="3">
+                <div class="traditional-border border-top-left"></div>
+                <div class="traditional-border border-top-right"></div>
+                <div class="traditional-border border-bottom-left"></div>
+                <div class="traditional-border border-bottom-right"></div>
+
+                <div class="event-image">
+                    <div>永年铜板跳展演</div>
+                    <div class="event-date-tag">4月21日</div>
+                </div>
+                <div class="event-info">
+                    <div class="event-name">永年铜板跳展演</div>
+                    <div class="event-desc">永年区特色民俗表演，表演者手持铜板在地上行走、跳跃，展示高超的技艺和民间艺术魅力。</div>
+                    <div class="event-meta">
+                        <div class="event-meta-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>永年区文化广场</span>
+                        </div>
+                        <div class="event-meta-item">
+                            <i class="fas fa-clock"></i>
+                            <span>15:00</span>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="event-tag folklore-tag">民间艺术</span>
+                    </div>
+                </div>
+                <div class="event-reminder active">
+                    <i class="fas fa-bell"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">即将开始</div>
+        <div class="events-list">
+            <div class="event-card folklore" data-event-id="4">
+                <div class="traditional-border border-top-left"></div>
+                <div class="traditional-border border-top-right"></div>
+                <div class="traditional-border border-bottom-left"></div>
+                <div class="traditional-border border-bottom-right"></div>
+
+                <div class="event-image">
+                    <div>邯郸皮影戏展演</div>
+                    <div class="event-date-tag">4月25日</div>
+                </div>
+                <div class="event-info">
+                    <div class="event-name">邯郸皮影戏展演</div>
+                    <div class="event-desc">传统皮影戏表演，演绎燕赵历史故事，体验非物质文化遗产的魅力。</div>
+                    <div class="event-meta">
+                        <div class="event-meta-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>丛台公园</span>
+                        </div>
+                        <div class="event-meta-item">
+                            <i class="fas fa-clock"></i>
+                            <span>19:00</span>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="event-tag folklore-tag">民间艺术</span>
+                    </div>
+                </div>
+                <div class="event-reminder">
+                    <i class="far fa-bell"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航 -->
+    <div class="bottom-nav">
+        <div class="nav-item" onclick="switchTab('首页')">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-name">首页</div>
+        </div>
+        <div class="nav-item active" onclick="switchTab('景点')">
+            <div class="nav-icon">🗿</div>
+            <div class="nav-name">景点</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('文化')">
+            <div class="nav-icon">📚</div>
+            <div class="nav-name">文化</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('行程')">
+            <div class="nav-icon">🗺️</div>
+            <div class="nav-name">行程</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('我的')">
+            <div class="nav-icon">👤</div>
+            <div class="nav-name">我的</div>
+        </div>
+    </div>
+</div>
+
+<!-- 活动详情弹窗 -->
+<div class="event-modal" id="eventModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>活动详情</h3>
+            <div class="modal-close" id="modalClose">
+                <i class="fas fa-times"></i>
+            </div>
+        </div>
+        <div class="modal-body">
+            <div class="modal-image" id="modalImage">
+                <div>活动图片</div>
+            </div>
+            <h3 class="modal-title" id="modalTitle">活动名称</h3>
+            <div class="modal-date" id="modalDate">
+                <i class="fas fa-calendar-alt"></i>
+                <span>4月5日 全天</span>
+            </div>
+            <div class="modal-location" id="modalLocation">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>邯郸各区县</span>
+            </div>
+            <div class="modal-desc" id="modalDesc">
+                这里是活动的详细描述内容，将展示活动的具体信息、特色、参与方式等详细内容。
+            </div>
+            <div id="modalTags">
+                <span class="modal-tag festival-tag">传统节日</span>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn secondary" id="shareBtn">
+                <i class="fas fa-share-alt"></i> 分享
+            </button>
+            <button class="modal-btn primary" id="joinBtn">
+                <i class="fas fa-calendar-plus"></i> 报名参加
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function switchTab(tab) {
+        window.location.href = tab + '.html';
+    }
+
+    // 页面加载时自动高亮当前页面对应的导航项
+    document.addEventListener('DOMContentLoaded', () => {
+        const currentPage = window.location.pathname.split('/').pop().split('.')[0]; // 获取当前文件名（不含后缀）
+        const navItems = document.querySelectorAll('.nav-item');
+
+        navItems.forEach(item => {
+            const tab = item.getAttribute('onclick')?.match(/'(.+?)'/)?.[1];
+
+            if (tab === currentPage) {
+                item.classList.add('active');
+            }
+
+            item.addEventListener('click', () => {
+                navItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded',  function() {
+        // 月份切换
+        const monthBtns = document.querySelectorAll('.month-btn');
+        monthBtns.forEach(btn  => {
+            btn.addEventListener('click',  function() {
+                monthBtns.forEach(b  => b.classList.remove('active'));
+                this.classList.add('active');
+
+                // 这里可以添加加载对应月份数据的逻辑
+                console.log(' 切换到月份:', this.textContent);
+            });
+        });
+
+        // 日期点击
+        const days = document.querySelectorAll('.day:not(:empty)');
+        days.forEach(day  => {
+            day.addEventListener('click',  function() {
+                days.forEach(d  => d.classList.remove('selected'));
+                this.classList.add('selected');
+
+                // 这里可以添加加载对应日期活动的逻辑
+                const date = this.querySelector('.solar').textContent;
+                console.log(' 选择日期:', date);
+            });
+        });
+
+        // 活动卡片点击
+        const eventCards = document.querySelectorAll('.event-card');
+        const eventModal = document.getElementById('eventModal');
+        const modalClose = document.getElementById('modalClose');
+
+        // 活动数据
+        const eventsData = {
+            1: {
+                title: "清明节民俗活动",
+                date: "4月5日 全天",
+                location: "邯郸各区县",
+                desc: "清明节是中国传统节日之一，也是最重要的祭祀节日之一，是祭祖和扫墓的日子。邯郸地区清明节习俗丰富多样，主要包括：\n\n1. 扫墓祭祖：人们携带酒食果品、纸钱等物品到墓地，将食物供祭在亲人墓前，再将纸钱焚化，为坟墓培上新土，折几枝嫩绿的新枝插在坟上，然后叩头行礼祭拜。\n\n2. 踏青郊游：清明时节春回大地，正是郊游的大好时光，人们纷纷走出家门，到郊外欣赏春色。\n\n3. 放风筝：放风筝是清明节传统活动之一，人们不仅白天放，夜间也放。夜里在风筝下挂上一串串彩色的小灯笼，像闪烁的明星，被称为'神灯'。\n\n4. 插柳戴柳：民间有'清明不戴柳，红颜成皓首'之说，人们把柳枝插在屋檐下或戴在头上，以祈福避邪。",
+                tags: ["传统节日"],
+                type: "festival"
+            },
+            2: {
+                title: "武安打树花表演",
+                date: "4月18日 19:30",
+                location: "武安市古城墙",
+                desc: "打树花是河北省武安市特有的传统民俗文化活动，已有500余年历史，是国家级非物质文化遗产。\n\n表演时，艺人将熔化的铁水泼洒到古城墙上，迸溅形成万朵火花，因犹如枝繁叶茂的树冠而称之为'树花'，其壮观程度不亚于燃放烟花。\n\n表演特点：\n1. 表演者反穿羊皮袄，头戴草帽，将1600℃的铁水泼向城墙\n2. 铁水遇冷迸溅四射，形成壮观的'火树银花'\n3. 每次表演持续约30分钟，需消耗铁水1000余斤\n\n这项表演不仅展示了民间艺人的高超技艺，也体现了劳动人民的智慧与勇气。每年吸引大量游客前来观赏，已成为武安旅游的一张名片。",
+                tags: ["非遗表演"],
+                type: "performance"
+            },
+            3: {
+                title: "永年铜板跳展演",
+                date: "4月21日 15:00",
+                location: "永年区文化广场",
+                desc: "永年铜板跳是邯郸永年区特有的民间舞蹈艺术形式，已有200多年历史，被列入河北省非物质文化遗产名录。\n\n表演特点：\n1. 表演者手持铜板（直径约15厘米的圆形铜片），边敲击边跳跃\n2. 铜板既是道具又是乐器，敲击时发出清脆悦耳的声音\n3. 舞蹈动作刚劲有力，节奏明快，具有很高的观赏性\n\n铜板跳源于民间祭祀活动，后发展为节庆表演艺术。表演时通常由8-12人组成，身着传统服饰，在锣鼓伴奏下进行表演。动作包括'十字跳'、'转圈跳'、'对跳'等多种形式，充分展现了燕赵文化的豪迈与激情。\n\n本次展演将邀请永年铜板跳传承人进行表演，并设有互动环节，观众可现场学习基本动作。",
+                tags: ["民间艺术"],
+                type: "folklore"
+            },
+            4: {
+                title:"邯郸皮影戏展演",
+                date: "4月25日 19:00", location: "丛台公园", desc: "邯郸皮影戏是河北省传统戏剧形式之一，具有悠久的历史和独特的艺术风格，被列入国家级非物质文化遗产名录。\n\n表演特点：\n1. 使用驴皮或牛皮制作的影人，造型精美，色彩艳丽\n2. 艺人幕后操纵影人，配以唱腔、对白和乐器伴奏\n3. 剧目多取材于历史故事、民间传说和神话故事\n\n本次展演将呈现经典剧目《赵氏孤儿》，该剧讲述了春秋时期晋国大夫赵朔一家被害，孤儿被程婴等人救出并最终报仇雪恨的故事，展现了燕赵大地的忠义精神。\n\n演出由邯郸皮影戏传承人王师傅领衔，演出时长约60分钟。演出结束后设有皮影制作体验环节，观众可亲手尝试操作皮影人物。", tags: ["民间艺术", "非遗表演"], type: "folklore" } };
+
+        eventCards.forEach(card  => {
+            card.addEventListener('click',  function() {
+                const eventId = this.getAttribute('data-event-id');
+                const eventData = eventsData[eventId];
+
+                // 填充弹窗内容
+                document.getElementById('modalTitle').textContent  = eventData.title;
+                document.getElementById('modalDate').innerHTML  = `<i class="fas fa-calendar-alt"></i><span>${eventData.date}</span>`;
+                document.getElementById('modalLocation').innerHTML  = `<i class="fas fa-map-marker-alt"></i><span>${eventData.location}</span>`;
+                document.getElementById('modalDesc').textContent  = eventData.desc;
+
+                // 设置图片（实际应用中替换为真实图片URL）
+                const modalImage = document.getElementById('modalImage');
+                modalImage.innerHTML  = `<div>${eventData.title}</div>`;
+
+                // 设置标签
+                const tagsContainer = document.getElementById('modalTags');
+                tagsContainer.innerHTML  = '';
+                eventData.tags.forEach(tag  => {
+                    let tagClass = '';
+                    if (eventData.type  === 'festival') {
+                        tagClass = 'festival-tag';
+                    } else if (eventData.type  === 'performance') {
+                        tagClass = 'performance-tag';
+                    } else {
+                        tagClass = 'folklore-tag';
+                    }
+                    tagsContainer.innerHTML  += `<span class="modal-tag ${tagClass}">${tag}</span>`;
+                });
+
+                // 显示弹窗
+                eventModal.classList.add('active');
+            });
+        });
+
+        // 关闭弹窗
+        modalClose.addEventListener('click',  function() {
+            eventModal.classList.remove('active');
+        });
+
+        // 点击弹窗外部关闭
+        eventModal.addEventListener('click',  function(e) {
+            if (e.target  === eventModal) {
+                eventModal.classList.remove('active');
+            }
+        });
+
+        // 提醒按钮切换
+        const reminderBtns = document.querySelectorAll('.event-reminder');
+        reminderBtns.forEach(btn  => {
+            btn.addEventListener('click',  function(e) {
+                e.stopPropagation();  // 阻止事件冒泡到卡片
+                const icon = this.querySelector('i');
+                if (icon.classList.contains('far'))  {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                    this.classList.add('active');
+                    // 这里可以添加设置提醒的逻辑
+                    console.log(' 设置提醒:', this.closest('.event-card').querySelector('.event-name').textContent);
+                } else {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    this.classList.remove('active');
+                    // 这里可以添加取消提醒的逻辑
+                    console.log(' 取消提醒:', this.closest('.event-card').querySelector('.event-name').textContent);
+                }
+            });
+        });
+
+        // 导航栏切换
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item  => {
+            item.addEventListener('click',  function() {
+                navItems.forEach(i  => i.classList.remove('active'));
+                this.classList.add('active');
+                // 这里可以添加页面切换的逻辑
+                console.log(' 切换到:', this.querySelector('span').textContent);
+            });
+        });
+
+        // 分享按钮
+        document.getElementById('shareBtn').addEventListener('click',  function() {
+            alert('活动已分享！');
+            // 实际应用中这里可以调用分享API
+        });
+
+        // 报名按钮
+        document.getElementById('joinBtn').addEventListener('click',  function() {
+            const btn = this;
+            btn.innerHTML  = '<i class="fas fa-check"></i> 已报名';
+            btn.style.backgroundColor  = '#4CAF50';
+            setTimeout(() => {
+                eventModal.classList.remove('active');
+            }, 1000);
+            // 实际应用中这里可以调用报名API
+        });
+    });
+</script>
+</body>
+</html>

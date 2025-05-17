@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>查看头像</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+<div class="phone-container max-w-xs bg-white rounded-3xl shadow-2xl overflow-hidden relative">
+    <!-- 顶部状态栏 -->
+    <div class="status-bar flex justify-between items-center px-6 py-3 bg-white/80 backdrop-blur-sm border-b border-gray-100">
+        <div class="time font-medium text-gray-700" id="current-time">9:41</div>
+        <div class="icons flex items-center space-x-2 text-gray-700">
+            <i class="fa-solid fa-signal"></i>
+            <i class="fa-solid fa-battery-three-quarters"></i>
+        </div>
+    </div>
+
+    <!-- 导航栏 -->
+    <div class="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-100">
+        <button id="back-button" class="flex items-center text-gray-700 hover:text-gray-900 transition-colors">
+            <i class="fa-solid fa-arrow-left mr-2"></i>
+            <span class="font-medium" onclick="switchTab('我的')">返回</span>
+        </button>
+        <h1 class="text-lg font-semibold text-gray-800">头像</h1>
+        <button class="text-gray-700 hover:text-gray-900 transition-colors">
+            <i class="fa-solid fa-ellipsis-v"></i>
+        </button>
+    </div>
+
+    <!-- 头像展示区 -->
+    <div class="avatar-container flex items-center justify-center bg-gray-50 h-[calc(100%-130px)]">
+        <div class="relative w-full h-full flex items-center justify-center">
+            <img src="img/我的头像.jpg" alt="用户头像" class="max-w-full max-h-full object-contain">
+
+            <!-- 底部操作栏 -->
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6 flex justify-center space-x-6">
+                <button class="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white rounded-full p-3 transition-all transform hover:scale-110">
+                    <i class="fa-solid fa-download"></i>
+                </button>
+                <button class="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white rounded-full p-3 transition-all transform hover:scale-110">
+                    <i class="fa-solid fa-pencil"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function switchTab(tab) {
+        window.location.href = tab + '.html';
+    }
+
+    // 页面加载时自动高亮当前页面对应的导航项
+    document.addEventListener('DOMContentLoaded', () => {
+        const currentPage = window.location.pathname.split('/').pop().split('.')[0]; // 获取当前文件名（不含后缀）
+        const navItems = document.querySelectorAll('.nav-item');
+
+        navItems.forEach(item => {
+            const tab = item.getAttribute('onclick')?.match(/'(.+?)'/)?.[1];
+
+            if (tab === currentPage) {
+                item.classList.add('active');
+            }
+
+            item.addEventListener('click', () => {
+                navItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+    });
+
+    // 更新时间
+    function updateTime() {
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        document.getElementById('current-time').textContent = `${hours}:${minutes}`;
+    }
+
+    setInterval(updateTime, 1000);
+    updateTime();
+
+    // 返回按钮功能
+    document.getElementById('back-button').addEventListener('click', function() {
+        window.history.back();
+    });
+</script>
+</body>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+    }
+
+    .phone-container {
+        width: 100%;
+        max-width: 420px;
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 20px;
+        margin: 0 auto;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .phone-screen {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 9/16;
+        background: #f8f8f8;
+        border-radius: 30px;
+        overflow: hidden;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+
+    .status-bar {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 16px 8px;
+        font-size: 14px;
+        background-color: rgba(255,255,255,0.8);
+        backdrop-filter: blur(5px);
+    }
+
+    .status-bar .time {
+        font-weight: 500;
+    }
+
+    .status-bar .icons {
+        display: flex;
+        gap: 6px;
+    }
+
+    .avatar-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: calc(100% - 40px); /* 减去状态栏高度 */
+    }
+
+    .avatar-container img {
+        max-width: 100%;
+        max-height: 100%;
+    }
+</style>
+
+</html>

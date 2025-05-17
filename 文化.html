@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图4-9 《燕赵冀》APP文化模块界面设计图</title>
+
+<body>
+<style>
+    .bottom-nav {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-around;
+        padding: 10px 0;
+        background: white;
+        border-top: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .nav-icon {
+        width: 24px;
+        height: 24px;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        transition: all 0.2s;
+    }
+
+    .nav-name {
+        font-size: 12px;
+        transition: all 0.2s;
+    }
+
+    .nav-item.active  {
+        color: #9d2933;
+    }
+
+    .nav-item:not(.active) {
+        color: #999;
+    }
+
+    .nav-item:not(.active):hover {
+        color: #666;
+    }
+
+    .nav-item:hover .nav-icon {
+        transform: scale(1.1);
+    }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+        background-color: #f5f5f5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    .phone-container {
+        width: 100%;
+        max-width: 420px;
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 20px;
+        margin: 0 auto;
+    }
+
+    .phone-screen {
+        position: relative;
+        width: 100%;
+        /* 16:9 比例 */
+        aspect-ratio: 9/16;
+        background: #ffffff;
+        border-radius: 30px;
+        overflow: hidden;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+
+    /* 状态栏 */
+    .status-bar {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 16px 8px;
+        font-size: 14px;
+    }
+
+    .status-bar .time {
+        font-weight: 500;
+    }
+
+    .status-bar .icons {
+        display: flex;
+        gap: 6px;
+    }
+
+    /* 顶部导航 */
+    .header {
+        padding: 10px 16px 15px;
+        background: #fff;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .nav-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .page-title {
+        font-size: 22px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .icons-right {
+        display: flex;
+        gap: 15px;
+    }
+
+    /* 分类选项卡 */
+    .tabs-container {
+        padding: 0 0 10px;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .tabs {
+        display: inline-flex;
+        gap: 12px;
+    }
+
+    .tab {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 14px;
+        color: #666;
+        background: #f5f5f5;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .tab:hover {
+        background: #e0e0e0;
+    }
+
+    .tab.active  {
+        background: #9d2933;
+        color: white;
+    }
+
+    /* 内容区域 */
+    .content {
+        height: calc(100% - 155px);
+        overflow-y: auto;
+        padding-bottom: 16px;
+    }
+
+    /* 文化长卷 */
+    .culture-banner {
+        margin: 0 16px 20px;
+        position: relative;
+        border-radius: 16px;
+        overflow: hidden;
+        height: 140px;
+        background: linear-gradient(to right, #3E7D6B, #60997B);
+        cursor: pointer;
+        transition: transform 0.3s;
+    }
+
+    .culture-banner:hover {
+        transform: translateY(-2px);
+    }
+
+    .banner-content {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        color: white;
+    }
+
+    .banner-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .banner-desc {
+        font-size: 14px;
+        opacity: 0.9;
+        margin-bottom: 15px;
+    }
+
+    .banner-btn {
+        display: inline-block;
+        padding: 6px 16px;
+        background: white;
+        color: #3E7D6B;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 500;
+        align-self: flex-start;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .banner-btn:hover {
+        background-color: #f5f5f5;
+    }
+
+    .time-icon {
+        position: absolute;
+        bottom: 15px;
+        right: 15px;
+        width: 60px;
+        height: 60px;
+        opacity: 0.8;
+    }
+
+    /* 历史节点 */
+    .section {
+        margin: 0 16px 20px;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+    .section-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .more-link {
+        color: #999;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+
+    .more-link:hover {
+        color: #9d2933;
+    }
+
+    /* 时间线 */
+    .timeline {
+        position: relative;
+        padding-left: 20px;
+        border-left: 2px dashed #9d2933;
+        margin-left: 8px;
+    }
+
+    .timeline-item {
+        position: relative;
+        margin-bottom: 20px;
+        padding-bottom: 5px;
+        cursor: pointer;
+    }
+
+    .timeline-item:hover .timeline-card {
+        transform: translateX(5px);
+    }
+
+    .timeline-item::before {
+        content: "";
+        position: absolute;
+        left: -29px;
+        top: 0;
+        width: 12px;
+        height: 12px;
+        background-color: #9d2933;
+        border-radius: 50%;
+        transition: transform 0.2s;
+    }
+
+    .timeline-item:hover::before {
+        transform: scale(1.3);
+    }
+
+    .timeline-year {
+        font-size: 14px;
+        font-weight: 600;
+        color: #9d2933;
+        margin-bottom: 6px;
+    }
+
+    .timeline-card {
+        background: white;
+        border-radius: 12px;
+        padding: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .timeline-item:hover .timeline-card {
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .timeline-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 5px;
+    }
+
+    .timeline-desc {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.5;
+    }
+
+    /* 故事卡片 */
+    .story-card {
+        background: white;
+        border-radius: 16px;
+        padding: 15px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        cursor: pointer;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .story-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .story-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .story-title-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .story-icon {
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #3E7D6B;
+    }
+
+    .story-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .story-tag {
+        padding: 4px 8px;
+        background: #FFF3CD;
+        color: #856404;
+        border-radius: 20px;
+        font-size: 12px;
+    }
+
+    .story-location {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 10px;
+    }
+
+    .story-content {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 10px;
+    }
+
+    .story-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .tag {
+        padding: 4px 10px;
+        background: #E6F7FF;
+        color: #3E7D6B;
+        border-radius: 20px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .tag:hover {
+        background-color: #D0EBFF;
+    }
+
+    /* 非遗展示 */
+    .heritage-scroll {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        padding: 0 16px 5px;
+        margin-bottom: 15px;
+    }
+
+    .heritage-card {
+        flex-shrink: 0;
+        width: 140px;
+        border-radius: 12px;
+        overflow: hidden;
+        background: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        cursor: pointer;
+        transition: transform 0.3s;
+    }
+
+    .heritage-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .heritage-img {
+        height: 120px;
+        background-color: #9d2933;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 14px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .heritage-img::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0));
+        z-index: 1;
+    }
+
+    .heritage-content {
+        padding: 10px;
+    }
+
+    .heritage-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 5px;
+    }
+
+    .heritage-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .heritage-type {
+        font-size: 12px;
+        color: #666;
+    }
+
+    .heritage-level {
+        padding: 2px 6px;
+        background: #F8D7DA;
+        color: #9d2933;
+        border-radius: 4px;
+        font-size: 10px;
+    }
+
+    /* 底部导航 */
+    .bottom-nav {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-around;
+        padding: 10px 0;
+        background: white;
+        border-top: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+
+    .nav-icon {
+        width: 24px;
+        height: 24px;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s;
+    }
+
+    .nav-item:hover .nav-icon {
+        transform: scale(1.1);
+    }
+
+    .nav-name {
+        font-size: 12px;
+    }
+
+    .nav-item.active  {
+        color: #9d2933;
+    }
+
+    .nav-item:not(.active) {
+        color: #999;
+    }
+
+    .nav-item:hover {
+        color: #9d2933;
+    }
+
+    /* 模态框 */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 100;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-content {
+        background-color: white;
+        border-radius: 16px;
+        width: 85%;
+        max-width: 400px;
+        max-height: 80vh;
+        overflow-y: auto;
+        padding: 20px;
+        animation: modalFadeIn 0.3s;
+    }
+
+    @keyframes modalFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .modal-title {
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .modal-close {
+        font-size: 20px;
+        cursor: pointer;
+        color: #999;
+        transition: color 0.2s;
+    }
+
+    .modal-close:hover {
+        color: #333;
+    }
+
+    .modal-body {
+        margin-bottom: 20px;
+    }
+
+    .detail-image {
+        width: 100%;
+        height: 180px;
+        background-color: #f5f5f5;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #999;
+    }
+
+    .detail-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    .detail-subtitle {
+        font-size: 14px;
+        color: #9d2933;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .detail-content {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 15px;
+    }
+
+    .detail-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 15px;
+    }
+
+    .detail-tag {
+        padding: 4px 10px;
+        background: #E6F7FF;
+        color: #3E7D6B;
+        border-radius: 20px;
+        font-size: 12px;
+    }
+
+    .modal-footer {
+        display: flex;
+        gap: 10px;
+    }
+
+    .modal-button {
+        flex: 1;
+        padding: 10px;
+        border-radius: 20px;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .modal-button.close  {
+        background-color: #f5f5f5;
+        color: #666;
+    }
+
+    .modal-button.close:hover  {
+        background-color: #eee;
+    }
+
+    .modal-button.map  {
+        background-color: #3E7D6B;
+        color: white;
+    }
+
+    .modal-button.map:hover  {
+        background-color: #2c5b4e;
+    }
+
+    /* 地图容器 */
+    .map-container {
+        width: 100%;
+        height: 200px;
+        background-color: #f5f5f5;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #999;
+    }
+</style>
+<div class="phone-container">
+    <div class="phone-screen">
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div class="time">9:41</div>
+            <div class="icons">
+                <span>📶</span>
+                <span>🔋</span>
+            </div>
+        </div>
+
+        <!-- 顶部导航 -->
+        <div class="header">
+            <div class="nav-top">
+                <div class="page-title">燕赵文化</div>
+                <div class="icons-right">
+                    <span>🔍</span>
+                </div>
+            </div>
+
+            <!-- 分类选项卡 -->
+            <div class="tabs-container">
+                <div class="tabs">
+                    <div class="tab active">历史典故</div>
+                    <div class="tab">民间艺术</div>
+                    <div class="tab">传统技艺</div>
+                    <div class="tab">民俗节庆</div>
+                    <div class="tab">古城记忆</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="content">
+            <!-- 文化长卷 -->
+            <div class="culture-banner">
+                <div class="banner-content">
+                    <div class="banner-title">燕赵历史长卷</div>
+                    <div class="banner-desc">探索赵国从建国到灭亡的历史脉络</div>
+                    <div class="banner-btn">开始探索</div>
+                </div>
+                <div class="time-icon">
+                    <svg viewBox="0 0 100 100" fill="none" stroke="white" stroke-width="3">
+                        <circle cx="50" cy="50" r="40" stroke-opacity="0.3" />
+                        <path d="M50 10 A40 40 0 0 1 90 50" />
+                        <circle cx="50" cy="10" r="3" fill="white" />
+                        <circle cx="90" cy="50" r="3" fill="white" />
+                        <circle cx="50" cy="50" r="5" fill="white" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- 历史节点 -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">重要历史节点</div>
+                    <div class="more-link">查看全部 ></div>
+                </div>
+
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-year">前386年</div>
+                        <div class="timeline-card" onclick="switchTab('文化1邯郸学步')">
+                            <div class="timeline-title">赵国定都邯郸</div>
+                            <div class="timeline-desc">赵敬侯将国都从晋阳迁至邯郸，开启了赵国历史上最繁荣的时期</div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-year">前325年</div>
+                        <div class="timeline-card">
+                            <div class="timeline-title">赵武灵王胡服骑射</div>
+                            <div class="timeline-desc">赵武灵王推行胡服骑射改革，增强军事力量，为赵国争霸奠定基础</div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-year">前260年</div>
+                        <div class="timeline-card">
+                            <div class="timeline-title">长平之战</div>
+                            <div class="timeline-desc">赵国与秦国在长平展开大战，赵军四十万被坑杀，国力从此衰落</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 经典故事 -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">经典故事地图</div>
+                    <div class="more-link">查看地图 ></div>
+                </div>
+
+                <div class="story-card" onclick="switchTab('文化1邯郸学步')">
+                    <div class="story-header">
+                        <div class="story-title-container">
+                            <div class="story-icon">📖</div>
+                            <div class="story-title">邯郸学步</div>
+                        </div>
+                        <div class="story-tag">战国时期</div>
+                    </div>
+
+                    <div class="story-location">
+                        <span>📍</span>
+                        <span>丛台宫廷</span>
+                    </div>
+
+                    <div class="story-content">
+                        讲述了燕国人到邯郸学习赵国人走路姿势，结果不仅没学会赵国步法，反而忘了自己的走路方式，最后爬着回国的故事。比喻刻意模仿反而失去自己本来面目。
+                    </div>
+
+                    <div class="story-tags">
+                        <div class="tag">成语典故</div>
+                        <div class="tag">历史教训</div>
+                    </div>
+                </div>
+
+                <div class="story-card">
+                    <div class="story-header">
+                        <div class="story-title-container">
+                            <div class="story-icon">📖</div>
+                            <div class="story-title">完璧归赵</div>
+                        </div>
+                        <div class="story-tag">战国时期</div>
+                    </div>
+
+                    <div class="story-location">
+                        <span>📍</span>
+                        <span>赵王宫</span>
+                    </div>
+
+                    <div class="story-content">
+                        蔺相如将和氏璧完好地从秦国带回赵国的故事。后用来比喻把物品完好地归还给物品的主人。
+                    </div>
+
+                    <div class="story-tags">
+                        <div class="tag">成语典故</div>
+                        <div class="tag">外交智慧</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 非遗传承 -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">非遗传承</div>
+                    <div class="more-link">查看全部 ></div>
+                </div>
+            </div>
+
+            <div class="heritage-scroll" onclick="switchTab('文化磁州窑')">
+                <div class="heritage-card">
+                    <div class="heritage-img">
+                        <img src="img/文化1.jpg" alt="磁州窑陶瓷" style="width:100%; height:120px; object-fit:cover;">
+                    </div>
+                    <div class="heritage-content">
+                        <div class="heritage-name">磁州窑陶瓷</div>
+                        <div class="heritage-info">
+                            <div class="heritage-type">传统技艺</div>
+                            <div class="heritage-level">国家级</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="heritage-card">
+                    <div class="heritage-img">
+                        <img src="img/文化3.png" alt="打树花" style="width:100%; height:120px; object-fit:cover;">
+                    </div>
+                    <div class="heritage-content">
+                        <div class="heritage-name">武安打树花</div>
+                        <div class="heritage-info">
+                            <div class="heritage-type">民间表演</div>
+                            <div class="heritage-level">国家级</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="heritage-card">
+                    <div class="heritage-img">
+                        <img src="img/文化2.jpg" alt="鼓书" style="width:100%; height:120px; object-fit:cover;">
+                    </div>
+                    <div class="heritage-content">
+                        <div class="heritage-name">邯郸鼓书</div>
+                        <div class="heritage-info">
+                            <div class="heritage-type">传统曲艺</div>
+                            <div class="heritage-level">省级</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部导航 -->
+            <div class="bottom-nav">
+                <div class="nav-item" onclick="switchTab('首页')">
+                    <div class="nav-icon">🏠</div>
+                    <div class="nav-name">首页</div>
+                </div>
+                <div class="nav-item active" onclick="switchTab('景点')">
+                    <div class="nav-icon">🗿</div>
+                    <div class="nav-name">景点</div>
+                </div>
+                <div class="nav-item" onclick="switchTab('文化')">
+                    <div class="nav-icon">📚</div>
+                    <div class="nav-name">文化</div>
+                </div>
+                <div class="nav-item" onclick="switchTab('行程')">
+                    <div class="nav-icon">🗺️</div>
+                    <div class="nav-name">行程</div>
+                </div>
+                <div class="nav-item" onclick="switchTab('我的')">
+                    <div class="nav-icon">👤</div>
+                    <div class="nav-name">我的</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function switchTab(tab) {
+        window.location.href = tab + '.html';
+    }
+
+    // 页面加载时自动高亮当前页面对应的导航项
+    document.addEventListener('DOMContentLoaded', () => {
+        const currentPage = window.location.pathname.split('/').pop().split('.')[0]; // 获取当前文件名（不含后缀）
+        const navItems = document.querySelectorAll('.nav-item');
+
+        navItems.forEach(item => {
+            const tab = item.getAttribute('onclick')?.match(/'(.+?)'/)?.[1];
+
+            if (tab === currentPage) {
+                item.classList.add('active');
+            }
+
+            item.addEventListener('click', () => {
+                navItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+    });
+</script>
+</body>
+</html>

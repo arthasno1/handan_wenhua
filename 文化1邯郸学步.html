@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图4-13 《燕赵冀》APP文化故事界面设计图</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .phone-container {
+            width: 100%;
+            max-width: 420px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 20px;
+            margin: 0 auto;
+        }
+
+        .phone-screen {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 9/16;
+            background: #ffffff;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 16px 8px;
+            font-size: 14px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            color: white;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent);
+        }
+
+        .status-bar .time {
+            font-weight: 500;
+        }
+
+        .status-bar .icons {
+            display: flex;
+            gap: 6px;
+        }
+
+        .header-image {
+            position: relative;
+            height: 200px;
+            background: url('img/邯郸学步.jpg') no-repeat center center;
+            background-size: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 45px;
+            left: 16px;
+            width: 36px;
+            height: 36px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            z-index: 100;
+            cursor: pointer;
+        }
+
+        .back-button:hover {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .story-header-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            color: white;
+        }
+
+        .story-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .story-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
+            height: calc(100% - 200px);
+            overflow-y: auto;
+            padding: 0 16px;
+            background: #fff;
+        }
+
+        .story-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .story-card:hover {
+            transform: scale(1.02);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .card-title-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-icon {
+            width: 24px;
+            height: 24px;
+            background-color: #3E7D6B;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .period-tag {
+            padding: 4px 8px;
+            background: #FFF3CD;
+            color: #856404;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .location-info {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .story-content {
+            font-size: 15px;
+            color: #333;
+            line-height: 1.7;
+            text-align: justify;
+            margin-bottom: 16px;
+        }
+
+        .story-content p {
+            margin-bottom: 16px;
+        }
+
+        .story-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        .story-content .emphasized {
+            font-weight: 600;
+            color: #3E7D6B;
+        }
+
+        .culture-interpretation .card-icon {
+            background-color: #4A90E2;
+        }
+
+        .historical-background .card-icon {
+            background-color: #9d2933;
+        }
+
+        .related-stories .card-icon {
+            background-color: #F2C94C;
+        }
+
+        .related-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .related-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .related-title {
+            font-size: 15px;
+            color: #3E7D6B;
+        }
+
+        .arrow-icon {
+            color: #ccc;
+        }
+
+        .bottom-actions {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: white;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+        }
+
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .btn-icon {
+            margin-bottom: 4px;
+            font-size: 18px;
+        }
+
+        .share-btn {
+            padding: 8px 16px;
+            background: #3E7D6B;
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .share-btn:hover {
+            background: #2c5b4e;
+        }
+    </style>
+</head>
+<body>
+<div class="phone-container">
+    <div class="phone-screen">
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div class="time">9:41</div>
+            <div class="icons">
+                <span>📶</span>
+                <span>🔋</span>
+            </div>
+        </div>
+
+        <!-- 顶部图片和标题区 -->
+        <div class="header-image">
+            <div class="back-button" onclick="history.back()">&#8592;</div>
+            <div class="story-header-overlay">
+                <div class="story-title">邯郸学步</div>
+                <div class="story-subtitle">战国时期的经典寓言故事</div>
+            </div>
+        </div>
+
+        <!-- 故事内容区 -->
+        <div class="content">
+            <!-- 故事简介 -->
+            <div class="story-card">
+                <div class="card-header">
+                    <div class="card-title-container">
+                        <div class="card-icon">📖</div>
+                        <div class="card-title">故事简介</div>
+                    </div>
+                    <div class="period-tag">战国时期</div>
+                </div>
+
+                <div class="location-info">
+                    <span>📍</span>
+                    <span>丛台宫廷</span>
+                </div>
+
+                <div class="story-content">
+                    <p>战国时期，燕国有个年轻人听说赵国的邯郸人走路姿势非常优美，便跑到邯郸去学习当地人的走路方式。</p>
+                    <p>这个燕国年轻人每天模仿邯郸人走路，努力学习他们迈步、抬脚的样子。但他<span class="emphasized">过分刻意模仿</span>，注意力全放在了如何迈步上，反而忘记了走路的基本动作。</p>
+                    <p>结果，他不仅没学会邯郸人的步法，反而把自己原本的走路方式也忘记了，最后只能手脚并用爬回燕国。</p>
+                </div>
+            </div>
+
+            <!-- 文化内涵 -->
+            <div class="story-card culture-interpretation">
+                <div class="card-header">
+                    <div class="card-title-container">
+                        <div class="card-icon">🧩</div>
+                        <div class="card-title">文化内涵</div>
+                    </div>
+                </div>
+
+                <div class="story-content">
+                    <p>"邯郸学步"这个成语告诫人们：学习他人长处应当取其精华、去其糟粕，结合自身特点进行吸收转化，而不是一味地模仿，否则可能得不偿失。</p>
+                    <p>这个故事体现了古代中国人的务实思想和辩证学习观，强调在学习过程中保持自我特色的重要性。它教导人们在追求进步时不要盲目崇拜或生搬硬套，而是要理性吸收，保持本真。</p>
+                </div>
+            </div>
+
+            <!-- 历史背景 -->
+            <div class="story-card historical-background">
+                <div class="card-header">
+                    <div class="card-title-container">
+                        <div class="card-icon">📜</div>
+                        <div class="card-title">历史背景</div>
+                    </div>
+                </div>
+
+                <div class="story-content">
+                    <p>战国时期，邯郸作为赵国都城，政治文化发达，礼仪规范严格，贵族文化兴盛。当时各国文化交流频繁，互相借鉴学习成为潮流，但也导致了一些盲目模仿的现象。</p>
+                    <p>《庄子·秋水》中最早记载了这个故事："昔者赵文王喜隐，而邯郸之民无不隐者。非隐若是，则不足为也。"后来在《吕氏春秋》中更详细地描述了这个故事，成为中国传统文化中广为流传的典故。</p>
+                </div>
+            </div>
+
+            <!-- 相关故事 -->
+            <div class="story-card related-stories">
+                <div class="card-header">
+                    <div class="card-title-container">
+                        <div class="card-icon">🔄</div>
+                        <div class="card-title">相关故事</div>
+                    </div>
+                </div>
+
+                <div class="related-item">
+                    <div class="related-title">完璧归赵</div>
+                    <div class="arrow-icon">›</div>
+                </div>
+
+                <div class="related-item">
+                    <div class="related-title">负荆请罪</div>
+                    <div class="arrow-icon">›</div>
+                </div>
+
+                <div class="related-item">
+                    <div class="related-title">围魏救赵</div>
+                    <div class="arrow-icon">›</div>
+                </div>
+            </div>
+
+            <!-- 底部留白，避免内容被底部操作栏遮挡 -->
+            <div style="height: 70px;"></div>
+        </div>
+
+        <!-- 底部分享区 -->
+        <div class="bottom-actions">
+            <div class="action-buttons">
+                <div class="action-btn" onclick="alert('点赞成功！')">
+                    <span class="btn-icon">👍</span>
+                    <span>赞</span>
+                </div>
+                <div class="action-btn" onclick="alert('评论功能暂未开放！')">
+                    <span class="btn-icon">💬</span>
+                    <span>评论</span>
+                </div>
+                <div class="action-btn" onclick="alert('收藏成功！')">
+                    <span class="btn-icon">⭐</span>
+                    <span>收藏</span>
+                </div>
+            </div>
+            <div class="share-btn" onclick="alert('分享功能暂未开放！')">分享</div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

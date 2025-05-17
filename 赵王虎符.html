@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>《燕赵冀》APP文物详情界面</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+      }
+
+      body {
+        background-color: #f8f8f8;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .phone-container {
+        position: relative;
+        width: 360px;
+        height: 640px;
+        background-color: white;
+        border-radius: 30px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .status-bar {
+        height: 24px;
+        background-color: #3e7d6b;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 12px;
+        align-items: center;
+        color: white;
+        font-size: 12px;
+      }
+
+      /* 新增: 顶部图片区域样式 */
+      .image-section {
+        position: relative;
+        height: 240px;
+        background-color: #3e7d6b;
+        overflow: hidden;
+      }
+
+      .image-section img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .image-controls {
+        position: absolute;
+        top: 20px;
+        left: 15px;
+        right: 15px;
+        display: flex;
+        justify-content: space-between;
+        z-index: 1;
+      }
+
+      .control-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+      }
+
+      /* 新增: 内容区域样式 */
+      .content {
+        flex: 1;
+        background-color: white;
+        border-radius: 20px 20px 0 0;
+        margin-top: -20px;
+        padding: 20px;
+        position: relative;
+        overflow-y: auto;
+      }
+
+      .artifact-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+      }
+
+      .artifact-subtitle {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 16px;
+      }
+
+      .tags {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .tag {
+        padding: 6px 12px;
+        background-color: rgba(62, 125, 107, 0.1);
+        color: #3e7d6b;
+        border-radius: 13px;
+        font-size: 12px;
+      }
+
+      .info-cards {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .info-card {
+        flex: 1;
+        background-color: #f8f8f8;
+        border-radius: 12px;
+        padding: 15px;
+      }
+
+      .info-card-label {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 8px;
+      }
+
+      .info-card-value {
+        font-size: 16px;
+        color: #333;
+        font-weight: 500;
+      }
+
+      .content-tabs {
+        display: flex;
+        gap: 40px;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+      }
+
+      .content-tab {
+        font-size: 16px;
+        color: #999;
+        position: relative;
+        padding-bottom: 10px;
+      }
+
+      .content-tab.active {
+        color: #3e7d6b;
+        font-weight: 600;
+      }
+
+      .content-tab.active::after {
+        content: '';
+        position: absolute;
+        bottom: -11px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: #3e7d6b;
+      }
+
+      .artifact-desc {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 20px;
+      }
+
+      /* 新增: 底部操作栏样式 */
+      .bottom-bar {
+        height: 60px;
+        background-color: white;
+        border-top: 1px solid #eee;
+        padding: 10px 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .action-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #f5f5f5;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #666;
+      }
+
+      .main-action-btn {
+        flex: 1;
+        height: 40px;
+        border-radius: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-size: 14px;
+      }
+
+      .main-action-btn.secondary {
+        background-color: #60997b;
+      }
+
+      .main-action-btn.primary {
+        background-color: #3e7d6b;
+      }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  </head>
+  <body>
+    <div class="phone-container">
+      <!-- 状态栏 -->
+      <div class="status-bar">
+        <span>20:25</span>
+        <div>
+          <span><i class="fas fa-signal"></i></span>
+          <span><i class="fas fa-wifi"></i></span>
+          <span><i class="fas fa-battery-three-quarters"></i></span>
+        </div>
+      </div>
+
+      <!-- 图片区域 -->
+      <div class="image-section">
+        <img src="img/赵王印.png" alt="赵王虎符" />
+        <div class="image-controls">
+          <div class="control-btn" onclick="switchTab('首页')">
+            <i class="fas fa-arrow-left"></i>
+          </div>
+          <div style="display: flex; gap: 10px">
+            <div class="control-btn">
+              <i class="fas fa-expand"></i>
+            </div>
+            <div class="control-btn" onclick="switchTab('赵王虎符青铜器展厅虚拟展馆')">
+              <i class="fas fa-camera"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 内容区域 -->
+      <div class="content">
+        <h1 class="artifact-title">赵王虎符</h1>
+        <div class="artifact-subtitle">战国时期 · 河北博物院藏品</div>
+
+        <div class="tags">
+          <span class="tag">青铜器</span>
+          <span class="tag">国宝级</span>
+          <span class="tag">可预约参观</span>
+        </div>
+
+        <div class="info-cards">
+          <div class="info-card">
+            <div class="info-card-label">出土年代</div>
+            <div class="info-card-value">战国中期</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">出土地点</div>
+            <div class="info-card-value">邯郸赵王陵</div>
+          </div>
+        </div>
+
+        <div class="content-tabs">
+          <div class="content-tab active">文物解读</div>
+          <div class="content-tab">历史背景</div>
+          <div class="content-tab">艺术特点</div>
+        </div>
+
+        <div class="artifact-desc">虎符为古代军事调兵符信，由青铜制成，分为左右两部分。一部分由君主收藏，另一部分由将军执掌。用时两部分相合，形成完整虎形，可证明调兵符令真实有效。此虎符出土于邯郸赵王陵，为战国时期赵国文物，具有极高的历史价值。</div>
+      </div>
+
+      <!-- 底部操作栏 -->
+      <div class="bottom-bar">
+        <div class="action-btn">
+          <i class="fas fa-share-alt"></i>
+        </div>
+        <div class="action-btn">
+          <i class="far fa-heart"></i>
+        </div>
+        <div class="main-action-btn secondary">详细</div>
+        <div class="main-action-btn primary">3D展示</div>
+      </div>
+    </div>
+  </body>
+  <!-- 添加JavaScript代码 -->
+  <script>
+    function switchTab(tab) {
+      window.location.href = tab + '.html'
+    }
+
+    // 页面加载时自动高亮当前页面对应的导航项
+    document.addEventListener('DOMContentLoaded', () => {
+      const currentPage = window.location.pathname.split('/').pop().split('.')[0] // 获取当前文件名（不含后缀）
+      const navItems = document.querySelectorAll('.nav-item')
+
+      navItems.forEach((item) => {
+        const tab = item.getAttribute('onclick')?.match(/'(.+?)'/)?.[1]
+
+        if (tab === currentPage) {
+          item.classList.add('active')
+        }
+
+        item.addEventListener('click', () => {
+          navItems.forEach((i) => i.classList.remove('active'))
+          item.classList.add('active')
+        })
+      })
+    })
+
+    // 返回上一页的函数
+    function goBack() {
+      window.history.back() // 调用浏览器返回功能
+    }
+  </script>
+</html>

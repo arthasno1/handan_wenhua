@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图4-25 《燕赵冀》APP社区互动界面设计图</title>
+    <style>
+
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            background: white;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.2s;
+        }
+
+        .nav-name {
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .nav-item.active  {
+            color: #9d2933;
+        }
+
+        .nav-item:not(.active) {
+            color: #999;
+        }
+
+        .nav-item:not(.active):hover {
+            color: #666;
+        }
+
+        .nav-item:hover .nav-icon {
+            transform: scale(1.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .phone-container {
+            width: 100%;
+            max-width: 420px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 20px;
+            margin: 0 auto;
+        }
+
+        .phone-screen {
+            position: relative;
+            width: 100%;
+            /* 竖屏比例 */
+            aspect-ratio: 9/16;
+            background: #f8f8f8;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 状态栏 */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 16px 8px;
+            font-size: 14px;
+        }
+
+        .status-bar .time {
+            font-weight: 500;
+        }
+
+        .status-bar .icons {
+            display: flex;
+            gap: 6px;
+        }
+
+        /* 顶部导航 */
+        .header {
+            padding: 10px 16px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f0f0f0;
+            background-color: white;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            color: #666;
+            font-size: 16px;
+        }
+
+        /* 分类选项卡 */
+        .tabs-container {
+            padding: 0 16px;
+            background: white;
+            overflow-x: auto;
+            white-space: nowrap;
+            scrollbar-width: none;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .tabs-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tabs {
+            display: inline-flex;
+        }
+
+        .tab {
+            padding: 12px 15px;
+            font-size: 14px;
+            color: #666;
+            position: relative;
+        }
+
+        .tab.active {
+            color: #3E7D6B;
+            font-weight: 600;
+        }
+
+        .tab.active::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 15px;
+            right: 15px;
+            height: 3px;
+            background-color: #3E7D6B;
+            border-radius: 1.5px;
+        }
+
+        /* 内容区域 */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        /* 社区内容卡片 */
+        .community-card {
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .card-header {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            background-color: #f0f0f0;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .post-time {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .follow-button {
+            padding: 4px 10px;
+            background-color: rgba(62, 125, 107, 0.1);
+            color: #3E7D6B;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .post-content {
+            padding: 0 16px 12px;
+        }
+
+        .post-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .post-text {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .post-image {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            background-color: #f5f5f5;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .single-image {
+            height: 200px;
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            margin-bottom: 12px;
+        }
+
+        .grid-image {
+            aspect-ratio: 1/1;
+            border-radius: 4px;
+            background-color: #f0f0f0;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .image-count {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 8px 0 8px 0;
+        }
+
+        .post-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .post-tag {
+            padding: 4px 10px;
+            background-color: #f5f5f5;
+            color: #666;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+
+        .location-tag {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .card-footer {
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #f5f5f5;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+        }
+
+        .action-button {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .action-icon {
+            font-size: 16px;
+        }
+
+        .action-count {
+            font-size: 12px;
+        }
+
+        /* 话题卡片 */
+        .topic-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .topic-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .topic-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .topic-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 12px;
+            background-color: #3E7D6B;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .more-button {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .topic-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .topic-tag {
+            padding: 6px 12px;
+            background-color: #f5f5f5;
+            color: #333;
+            border-radius: 18px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .topic-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .topic-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* 问答卡片 */
+        .qa-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .qa-label {
+            display: inline-block;
+            padding: 2px 6px;
+            background-color: rgba(62, 125, 107, 0.1);
+            color: #3E7D6B;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .qa-question {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .qa-answer {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .qa-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .answer-count {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .qa-more {
+            color: #3E7D6B;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* 发布按钮 */
+        .publish-button {
+            position: absolute;
+            right: 20px;
+            bottom: 80px;
+            width: 50px;
+            height: 50px;
+            border-radius: 25px;
+            background-color: #3E7D6B;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* 底部导航 */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            background: white;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .nav-name {
+            font-size: 12px;
+        }
+
+        .nav-item.active {
+            color: #3E7D6B;
+        }
+
+        .nav-item:not(.active) {
+            color: #999;
+        }
+
+        /* 装饰元素 */
+        .traditional-pattern {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            opacity: 0.03;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%233E7D6B' d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z'%3E%3C/path%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <div class="phone-screen">
+            <!-- 状态栏 -->
+            <div class="status-bar">
+                <div class="time">9:41</div>
+                <div class="icons">
+                    <span>📶</span>
+                    <span>🔋</span>
+                </div>
+            </div>
+
+            <!-- 顶部导航 -->
+            <div class="header">
+                <div class="page-title">社区</div>
+                <div class="header-actions">
+                    <span>🔍</span>
+                    <span>📃</span>
+                </div>
+            </div>
+
+            <!-- 分类选项卡 -->
+            <div class="tabs-container">
+                <div class="tabs">
+                    <div class="tab active">精选推荐</div>
+                    <div class="tab">热门话题</div>
+                    <div class="tab">游记攻略</div>
+                    <div class="tab">问答互动</div>
+                    <div class="tab">官方资讯</div>
+                </div>
+            </div>
+
+            <!-- 内容区域 -->
+            <div class="content">
+                <!-- 装饰元素 -->
+                <div class="traditional-pattern" style="top: 50px; right: 30px;"></div>
+                <div class="traditional-pattern" style="bottom: 100px; left: 20px;"></div>
+
+                <!-- 话题卡片 -->
+                <div class="topic-card">
+                    <div class="topic-header">
+                        <div class="topic-title">
+                            <div class="topic-icon">#</div>
+                            <span>热门话题</span>
+                        </div>
+                        <div class="more-button">更多 ></div>
+                    </div>
+
+                    <div class="topic-tags">
+                        <div class="topic-tag">邯郸古迹探索</div>
+                        <div class="topic-tag">磁州窑陶艺</div>
+                        <div class="topic-tag">赵文化节</div>
+                        <div class="topic-tag">邯郸美食攻略</div>
+                        <div class="topic-tag">打树花表演</div>
+                    </div>
+
+                    <div class="topic-stats">
+                        <div class="topic-stat">
+                            <span>👁️</span>
+                            <span>26.5万次浏览</span>
+                        </div>
+                        <div class="topic-stat">
+                            <span>📝</span>
+                            <span>1.8万篇内容</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 社区内容卡片 -->
+                <div class="community-card">
+                    <div class="card-header">
+                        <div class="user-avatar" style="background-image: url('/api/placeholder/40/40');"></div>
+                        <div class="user-info">
+                            <div class="user-name">悠游历史</div>
+                            <div class="post-time">今天 14:30</div>
+                        </div>
+                        <div class="follow-button">关注</div>
+                    </div>
+
+                    <div class="post-content">
+                        <div class="post-title">赵王宫遗址 - 走进千年古都的时光隧道</div>
+                        <div class="post-text">今天终于来到了期待已久的赵王宫遗址，这是战国时期赵国的王宫遗址，历史感扑面而来。站在这片土地上，仿佛穿越回了两千多年前的战国时代，脑海中不禁浮现出赵武灵王"胡服骑射"改革的场景...</div>
+
+                        <div class="post-image single-image" style="background-image: url('/api/placeholder/400/200');"></div>
+
+                        <div class="post-tags">
+                            <div class="post-tag">赵王宫遗址</div>
+                            <div class="post-tag">邯郸古迹</div>
+                            <div class="post-tag location-tag">
+                                <span>📍</span>
+                                <span>河北省邯郸市丛台区</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="action-buttons">
+                            <div class="action-button">
+                                <span class="action-icon">👍</span>
+                                <span class="action-count">328</span>
+                            </div>
+                            <div class="action-button">
+                                <span class="action-icon">💬</span>
+                                <span class="action-count">56</span>
+                            </div>
+                            <div class="action-button">
+                                <span class="action-icon">⭐</span>
+                                <span class="action-count">82</span>
+                            </div>
+                        </div>
+                        <div class="action-button">
+                            <span class="action-icon">🔄</span>
+                            <span class="action-count">分享</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 社区内容卡片2 -->
+                <div class="community-card">
+                    <div class="card-header">
+                        <div class="user-avatar" style="background-image: url('/api/placeholder/40/40');"></div>
+                        <div class="user-info">
+                            <div class="user-name">陶艺之旅</div>
+                            <div class="post-time">昨天 18:45</div>
+                        </div>
+                        <div class="follow-button">已关注</div>
+                    </div>
+
+                    <div class="post-content">
+                        <div class="post-text">在磁州窑传承人张师傅的工作室度过了充实的一天，亲手体验了拉坯和绘制白地黑花的工艺，虽然成品比较粗糙，但收获满满！张师傅的技艺真是令人叹为观止，他说这门手艺已经传承了十几代人...</div>
+
+                        <div class="image-grid">
+                            <div class="grid-image" style="background-image: url('/api/placeholder/120/120');"></div>
+                            <div class="grid-image" style="background-image: url('/api/placeholder/120/120');"></div>
+                            <div class="grid-image" style="background-image: url('/api/placeholder/120/120'); position: relative;">
+                                <div class="image-count">+2</div>
+                            </div>
+                        </div>
+
+                        <div class="post-tags">
+                            <div class="post-tag">磁州窑</div>
+                            <div class="post-tag">非遗体验</div>
+                            <div class="post-tag location-tag">
+                                <span>📍</span>
+                                <span>河北省磁县</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="action-buttons">
+                            <div class="action-button">
+                                <span class="action-icon">👍</span>
+                                <span class="action-count">286</span>
+                            </div>
+                            <div class="action-button">
+                                <span class="action-icon">💬</span>
+                                <span class="action-count">42</span>
+                            </div>
+                            <div class="action-button">
+                                <span class="action-icon">⭐</span>
+                                <span class="action-count">91</span>
+                            </div>
+                        </div>
+                        <div class="action-button">
+                            <span class="action-icon">🔄</span>
+                            <span class="action-count">分享</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 问答卡片 -->
+                <div class="qa-card">
+                    <div class="qa-label">热门问答</div>
+                    <div class="qa-question">邯郸三日游，有哪些必去的景点和必吃的美食？</div>
+                    <div class="qa-answer">邯郸三日游推荐景点：第一天可以游览赵王城遗址和丛台公园，感受历史氛围；第二天去广府古城和响堂山石窟，领略古建筑和佛教艺术；第三天体验磁州窑和武安打树花等非遗文化。美食方面，一定要尝试邯郸卷饼、鸡鸣汤饼、武安荞面、肉筋等特色美食，尤其是鸡鸣汤饼，据说已有上千年历史...</div>
+                    <div class="qa-footer">
+                        <div class="answer-count">
+                            <span>💬</span>
+                            <span>12个回答</span>
+                        </div>
+                        <div class="qa-more">查看全部</div>
+                    </div>
+                </div>
+
+                <!-- 发布按钮 -->
+                <div class="publish-button">+</div>
+            </div>
+
+            <!-- 底部导航 -->
+            <div class="bottom-nav">
+                <div class="nav-item" onclick="switchTab('首页')">
+                    <div class="nav-icon">🏠</div>
+                    <div class="nav-name">首页</div>
+                </div>
+                <div class="nav-item active" onclick="switchTab('景点')">
+                    <div class="nav-icon">🗿</div>
+                    <div class="nav-name">景点</div>
+                </div>
+                <div class="nav-item" onclick="switchTab('文化')">
+                    <div class="nav-icon">📚</div>
+                    <div class="nav-name">文化</div>
+                </div>
+                <div class="nav-item" onclick="switchTab('行程')">
+                    <div class="nav-icon">🗺️</div>
+                    <div class="nav-name">行程</div>
+                </div>
+                <div class="nav-item" onclick="switchTab('我的')">
+                    <div class="nav-icon">👤</div>
+                    <div class="nav-name">我的</div>
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+    function switchTab(tab) {
+        window.location.href = tab + '.html';
+    }
+
+    // 页面加载时自动高亮当前页面对应的导航项
+    document.addEventListener('DOMContentLoaded', () => {
+        const currentPage = window.location.pathname.split('/').pop().split('.')[0]; // 获取当前文件名（不含后缀）
+        const navItems = document.querySelectorAll('.nav-item');
+
+        navItems.forEach(item => {
+            const tab = item.getAttribute('onclick')?.match(/'(.+?)'/)?.[1];
+
+            if (tab === currentPage) {
+                item.classList.add('active');
+            }
+
+            item.addEventListener('click', () => {
+                navItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+    });
+</script>
+</body>
+</html>

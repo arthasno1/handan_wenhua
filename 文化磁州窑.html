@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>图4-14 《燕赵冀》APP非遗体验界面设计图</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      }
+
+      body {
+        background-color: #f5f5f5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+
+      .phone-container {
+        width: 100%;
+        max-width: 420px;
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 20px;
+        margin: 0 auto;
+      }
+
+      .phone-screen {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 9/16;
+        background: #ffffff;
+        border-radius: 30px;
+        overflow: hidden;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .status-bar {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 16px 8px;
+        font-size: 14px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        color: white;
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent);
+      }
+
+      .status-bar .time {
+        font-weight: 500;
+      }
+
+      .status-bar .icons {
+        display: flex;
+        gap: 6px;
+      }
+
+      .header-image {
+        position: relative;
+        height: 220px;
+        background: url('img/文化磁窑1.jpg') no-repeat center center;
+        background-size: cover;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 18px;
+        font-weight: 500;
+      }
+
+      .back-button {
+        position: absolute;
+        top: 45px;
+        left: 16px;
+        width: 36px;
+        height: 36px;
+        background-color: rgba(0, 0, 0, 0.3);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 20px;
+        z-index: 100;
+        cursor: pointer;
+      }
+
+      .heritage-header-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 20px;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+        color: white;
+      }
+
+      .heritage-title {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 5px;
+      }
+
+      .heritage-subtitle {
+        font-size: 14px;
+        opacity: 0.9;
+      }
+
+      .heritage-badge {
+        position: absolute;
+        top: 50px;
+        right: 16px;
+        background-color: #9d2933;
+        color: white;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 12px;
+      }
+
+      .tabs-container {
+        display: flex;
+        border-bottom: 1px solid #eee;
+        background: white;
+      }
+
+      .tab {
+        flex: 1;
+        padding: 14px 0;
+        text-align: center;
+        font-size: 14px;
+        color: #666;
+        position: relative;
+      }
+
+      .tab.active {
+        color: #3e7d6b;
+        font-weight: 600;
+      }
+
+      .tab.active::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 25%;
+        width: 50%;
+        height: 3px;
+        background-color: #3e7d6b;
+        border-radius: 3px;
+      }
+
+      .content {
+        height: calc(100% - 270px);
+        overflow-y: auto;
+        background: #f8f8f8;
+      }
+
+      .heritage-card {
+        background: white;
+        border-radius: 12px;
+        padding: 16px;
+        margin: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+
+      .card-title-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .card-icon {
+        width: 24px;
+        height: 24px;
+        background-color: #3e7d6b;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+      }
+
+      .card-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .heritage-content {
+        font-size: 15px;
+        color: #333;
+        line-height: 1.7;
+        text-align: justify;
+      }
+
+      .heritage-content p {
+        margin-bottom: 16px;
+      }
+
+      .heritage-content p:last-child {
+        margin-bottom: 0;
+      }
+
+      .image-gallery {
+        display: flex;
+        gap: 10px;
+        margin: 16px 0;
+        overflow-x: auto;
+        padding-bottom: 5px;
+      }
+
+      .image-gallery {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        padding-bottom: 5px;
+        scroll-snap-type: x mandatory; /* 可选：滑动吸附效果 */
+      }
+
+      .gallery-image {
+        flex: 0 0 auto; /* 宽度由内容决定 */
+        height: 100px;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        border-radius: 8px;
+        min-width: 100px; /* 最小宽度限制 */
+        max-width: 100%; /* 防止溢出 */
+        scroll-snap-align: start; /* 可选：配合上面的吸附使用 */
+      }
+
+      .process-card .card-icon {
+        background-color: #4a90e2;
+      }
+
+      .process-step {
+        display: flex;
+        margin-bottom: 16px;
+      }
+
+      .step-number {
+        width: 24px;
+        height: 24px;
+        background-color: #4a90e2;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        margin-right: 12px;
+        flex-shrink: 0;
+      }
+
+      .step-content {
+        flex: 1;
+      }
+
+      .step-title {
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: #333;
+      }
+
+      .step-desc {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.6;
+      }
+
+      .master-card .card-icon {
+        background-color: #9d2933;
+      }
+
+      .master-profile {
+        display: flex;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+
+      .master-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        overflow: hidden;
+        background-color: #ddd;
+        margin-right: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        color: #666;
+        flex-shrink: 0;
+      }
+
+      .master-info {
+        flex: 1;
+      }
+
+      .master-name {
+        font-weight: 600;
+        font-size: 16px;
+        margin-bottom: 4px;
+        color: #333;
+      }
+
+      .master-title {
+        font-size: 14px;
+        color: #666;
+      }
+
+      .bottom-actions {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 16px;
+        background: white;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 16px;
+      }
+
+      .action-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 12px;
+        color: #666;
+      }
+
+      .btn-icon {
+        margin-bottom: 4px;
+        font-size: 18px;
+      }
+
+      .experience-btn {
+        padding: 8px 16px;
+        background: #3e7d6b;
+        color: white;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 500;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="phone-container">
+      <div class="phone-screen">
+        <!-- 状态栏 -->
+        <div class="status-bar">
+          <div class="time">9:41</div>
+          <div class="icons">
+            <span>📶</span>
+            <span>🔋</span>
+          </div>
+        </div>
+
+        <!-- 顶部图片和标题区 -->
+        <div class="header-image">
+          <div class="back-button" onclick="history.back()">&#8592;</div>
+          <div class="heritage-badge">国家级非遗</div>
+          <div class="heritage-header-overlay">
+            <div class="heritage-title">磁州窑陶瓷</div>
+            <div class="heritage-subtitle">始于北宋，兴盛于金元，传承千年的民间瓷器烧制技艺</div>
+          </div>
+        </div>
+
+        <!-- 选项卡导航 -->
+        <div class="tabs-container">
+          <div class="tab active">非遗介绍</div>
+          <div class="tab">工艺流程</div>
+          <div class="tab">名家传承</div>
+          <div class="tab">作品欣赏</div>
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="content">
+          <!-- 非遗介绍 -->
+          <div class="heritage-card">
+            <div class="card-header">
+              <div class="card-title-container">
+                <div class="card-icon">📖</div>
+                <div class="card-title">非遗概述</div>
+              </div>
+            </div>
+
+            <div class="heritage-content">
+              <p>磁州窑是中国北方著名的民间瓷窑，兴起于北宋，鼎盛于金元，以河北省邯郸市峰峰矿区为中心，分布于晋、冀、豫、鲁四省交界地带。其制瓷历史长达千余年，是中国陶瓷史上最大的民窑体系。</p>
+              <p>磁州窑以白地黑花为主要风格特色，装饰题材广泛吸收民间艺术素材，构图大胆洒脱，笔法自由奔放，体现了浓郁的生活气息和民族风格。其影响远及日本、韩国等东亚国家，是中国陶瓷文化的重要组成部分。</p>
+            </div>
+
+            <div class="image-gallery">
+              <div class="gallery-image" style="background-image: url('img/文化磁窑2.jpg')"></div>
+              <div class="gallery-image" style="background-image: url('img/文化磁窑3.jpg')"></div>
+              <div class="gallery-image" style="background-image: url('img/文化磁窑4.jpg')"></div>
+            </div>
+          </div>
+
+          <!-- 工艺流程 -->
+          <div class="heritage-card process-card">
+            <div class="card-header">
+              <div class="card-title-container">
+                <div class="card-icon">🔨</div>
+                <div class="card-title">工艺流程</div>
+              </div>
+            </div>
+
+            <div class="process-step">
+              <div class="step-number">1</div>
+              <div class="step-content">
+                <div class="step-title">选料制泥</div>
+                <div class="step-desc">选取优质瓷土，去除杂质，研磨成泥，反复揉捏排气，确保泥料细腻均匀，无气泡。</div>
+              </div>
+            </div>
+
+            <div class="process-step">
+              <div class="step-number">2</div>
+              <div class="step-content">
+                <div class="step-title">拉胚成型</div>
+                <div class="step-desc">在陶轮上通过拉坯技术将泥料制成所需器型，讲究轻重均匀，造型优美。</div>
+              </div>
+            </div>
+
+            <div class="process-step">
+              <div class="step-number">3</div>
+              <div class="step-content">
+                <div class="step-title">晾晒坯体</div>
+                <div class="step-desc">将成型的坯体置于通风处自然风干，使其水分蒸发至半干状态。</div>
+              </div>
+            </div>
+
+            <div class="process-step">
+              <div class="step-number">4</div>
+              <div class="step-content">
+                <div class="step-title">装饰彩绘</div>
+                <div class="step-desc">在半干的坯体上进行刻花、划花、印花等装饰，或施以黑釉绘制纹样。</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 名家传承 -->
+          <div class="heritage-card master-card">
+            <div class="card-header">
+              <div class="card-title-container">
+                <div class="card-icon">👨‍🎨</div>
+                <div class="card-title">名家传承</div>
+              </div>
+            </div>
+
+            <div class="master-profile">
+              <div class="master-avatar" style="background-image: url('path/to/master-avatar.jpg')"></div>
+              <div class="master-info">
+                <div class="master-name">张明芳</div>
+                <div class="master-title">国家级非物质文化遗产传承人</div>
+              </div>
+            </div>
+
+            <div class="heritage-content">
+              <p>张明芳先生出生于磁州窑世家，自幼跟随祖父学习陶瓷技艺，六十余年专注于磁州窑传统工艺的继承与创新。其作品多次获国家级大奖，被故宫博物院等多家博物馆收藏。</p>
+              <p>他坚持传统手工技艺，精通刻花、划花、堆花等多种装饰手法，同时注重将现代审美融入传统工艺，创作了大量深受国内外收藏家喜爱的精品佳作。</p>
+            </div>
+          </div>
+
+          <!-- 底部留白，避免内容被底部操作栏遮挡 -->
+          <div style="height: 70px"></div>
+        </div>
+
+        <!-- 底部按钮区 -->
+        <div class="bottom-actions">
+          <div class="action-buttons">
+            <div class="action-btn">
+              <span class="btn-icon">⭐</span>
+              <span>收藏</span>
+            </div>
+            <div class="action-btn">
+              <span class="btn-icon">💬</span>
+              <span>评论</span>
+            </div>
+            <div class="action-btn">
+              <span class="btn-icon">🔄</span>
+              <span>分享</span>
+            </div>
+          </div>
+          <div class="experience-btn">预约体验</div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

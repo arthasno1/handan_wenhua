@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图4-10 《燕赵冀》APP行程模块界面设计图</title>
+    <style>
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            background: white;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.2s;
+        }
+
+        .nav-name {
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .nav-item.active  {
+            color: #9d2933;
+        }
+
+        .nav-item:not(.active) {
+            color: #999;
+        }
+
+        .nav-item:not(.active):hover {
+            color: #666;
+        }
+
+        .nav-item:hover .nav-icon {
+            transform: scale(1.1);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .phone-container {
+            width: 100%;
+            max-width: 420px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 20px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phone-screen {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 9/16;
+            background: #ffffff;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            animation: fadeIn 1s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 16px 8px;
+            font-size: 14px;
+        }
+
+        .status-bar .time {
+            font-weight: 500;
+        }
+
+        .status-bar .icons {
+            display: flex;
+            gap: 6px;
+        }
+
+        .header {
+            padding: 10px 16px 15px;
+            background: #fff;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .nav-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .page-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .icons-right {
+            display: flex;
+            gap: 15px;
+        }
+
+        .tabs-container {
+            padding: 0 0 10px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f5f5f5;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            background: #f5f5f5;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .tab:hover {
+            background-color: rgba(0,0,0,0.05);
+        }
+
+        .tab.active {
+            background: #3E7D6B;
+            color: white;
+        }
+
+        .content {
+            height: calc(100% - 155px);
+            overflow-y: auto;
+            padding: 16px;
+            background: #f8f9fa;
+        }
+
+        .itinerary-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .itinerary-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .itinerary-image {
+            position: relative;
+            height: 180px;
+            background-color: #3E7D6B;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .itinerary-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            color: white;
+        }
+
+        .itinerary-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .itinerary-brief {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .itinerary-content {
+            padding: 16px;
+        }
+
+        .itinerary-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .meta-icon {
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .itinerary-desc {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .itinerary-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            padding: 4px 10px;
+            background: #f5f5f5;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .timeline-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 16px;
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .timeline-day {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .day-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #3E7D6B;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .day-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 20px;
+            border-left: 2px solid #3E7D6B;
+            margin-left: 8px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+            padding-bottom: 5px;
+        }
+
+        .timeline-item::before {
+            content: "";
+            position: absolute;
+            left: -29px;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            background-color: #3E7D6B;
+            border-radius: 50%;
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .timeline-time {
+            font-size: 14px;
+            font-weight: 600;
+            color: #3E7D6B;
+            margin-bottom: 6px;
+        }
+
+        .timeline-spot {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .timeline-spot-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .timeline-spot-desc {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            background: white;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-name {
+            font-size: 12px;
+        }
+
+        .nav-item.active {
+            color: #3E7D6B;
+        }
+
+        .nav-item:not(.active) {
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+<div class="phone-container">
+    <div class="phone-screen">
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div class="time">9:41</div>
+            <div class="icons">
+                <span>📶</span>
+                <span>🔋</span>
+            </div>
+        </div>
+
+        <!-- 顶部导航 -->
+        <div class="header">
+            <div class="nav-top">
+                <div class="page-title">行程</div>
+                <div class="icons-right">
+                    <span>➕</span>
+                </div>
+            </div>
+
+            <!-- 分类选项卡 -->
+            <div class="tabs-container">
+                <div class="tabs">
+                    <div class="tab active" onclick="switchTab(this)">推荐行程</div>
+                    <div class="tab" onclick="switchTab(this)">定制行程</div>
+                    <div class="tab" onclick="switchTab(this)">我的行程</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="content">
+            <!-- 行程卡片 -->
+            <div class="itinerary-card">
+                <div class="itinerary-image" style="background-image: url('https://picsum.photos/seed/trip1/800/400');">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent p-6 flex flex-col justify-end');">
+                    <div class="itinerary-overlay">
+                        <div class="itinerary-title">赵国历史探秘三日游</div>
+                        <div class="itinerary-brief">重走赵国史迹，探寻千年文化脉络</div>
+                    </div>
+                </div>
+                <div class="itinerary-content">
+                    <div class="itinerary-meta">
+                        <div class="meta-item">
+                            <div class="meta-icon">📅</div>
+                            <span>3天</span>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-icon">🗺️</div>
+                            <span>10个景点</span>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-icon">👀</div>
+                            <span>2.3k浏览</span>
+                        </div>
+                    </div>
+                    <div class="itinerary-desc">
+                        穿越古今，深入邯郸赵国故地，探访赵王城遗址、丛台公园、武灵丛台等历史遗迹，品味赵国历史文化精华。
+                    </div>
+                    <div class="itinerary-tags">
+                        <div class="tag">历史文化</div>
+                        <div class="tag">考古遗迹</div>
+                        <div class="tag">赵国文化</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 行程时间线 -->
+            <div class="timeline-card">
+                <div class="timeline-header">
+                    <div class="timeline-day">
+                        <div class="day-icon">1</div>
+                        <div class="day-text">Day 1</div>
+                    </div>
+                    <div class="day-date">5月15日 周六</div>
+                </div>
+
+                <div class="timeline" onclick="switchTab('文化地图')">
+                    <div class="timeline-item">
+                        <div class="timeline-time">09:00 - 11:30</div>
+                        <div class="timeline-spot">
+                            <div class="timeline-spot-title">赵王城遗址</div>
+                            <div class="timeline-spot-desc">
+                                战国时期赵国都城遗址，了解赵国政治军事文化中心。讲解员将带您探寻赵王城的前世今生。
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-time">12:00 - 13:30</div>
+                        <div class="timeline-spot">
+                            <div class="timeline-spot-title">赵国风味午餐</div>
+                            <div class="timeline-spot-desc">
+                                品尝地道的赵国风味菜肴，如脍炙人口的"武灵丛台宴"。
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-time">14:00 - 17:00</div>
+                        <div class="timeline-spot">
+                            <div class="timeline-spot-title">丛台公园</div>
+                            <div class="timeline-spot-desc">
+                                相传为赵武灵王登台点兵处，现为融古典园林与现代景观为一体的综合性公园。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-card">
+                <div class="timeline-header">
+                    <div class="timeline-day">
+                        <div class="day-icon">2</div>
+                        <div class="day-text">Day 2</div>
+                    </div>
+                    <div class="day-date">5月16日 周日</div>
+                </div>
+
+                <div class="timeline" onclick="switchTab('文化地图')">
+                    <div class="timeline-item">
+                        <div class="timeline-time">08:30 - 11:30</div>
+                        <div class="timeline-spot">
+                            <div class="timeline-spot-title">邯郸博物馆</div>
+                            <div class="timeline-spot-desc">
+                                馆藏丰富的赵国文物，包括青铜器、玉器、陶器等，全面了解赵国的历史文化。
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-time">13:00 - 16:30</div>
+                        <div class="timeline-spot">
+                            <div class="timeline-spot-title">响堂山石窟</div>
+                            <div class="timeline-spot-desc">
+                                北朝时期重要的佛教石窟，保存有大量精美的佛教造像和壁画。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            <!-- 底部导航 -->
+            <div class="bottom-nav">
+                <div class="nav-item" onclick="switchTab('首页')">
+                    <div class="nav-icon">🏠</div>
+                    <div class="nav-name">首页</div>
+                </div>
+                <div class="nav-item active" onclick="switchTab('景点')">
+                    <div class="nav-icon">🗿</div>
+                    <div class="nav-name">景点</div>
+                </div>
+                <div class="nav-item" onclick="switchTab('文化')">
+                    <div class="nav-icon">📚</div>
+                    <div class="nav-name">文化</div>
+                </div>
+                <div class="nav-item" onclick="switchTab('行程')">
+                    <div class="nav-icon">🗺️</div>
+                    <div class="nav-name">行程</div>
+                </div>
+                <div class="nav-item" onclick="switchTab('我的')">
+                    <div class="nav-icon">👤</div>
+                    <div class="nav-name">我的</div>
+                </div>
+            </div>
+    </div>
+</div>
+</div>
+<script>
+    function switchTab(tab) {
+        window.location.href = tab + '.html';
+    }
+
+    // 页面加载时自动高亮当前页面对应的导航项
+    document.addEventListener('DOMContentLoaded', () => {
+        const currentPage = window.location.pathname.split('/').pop().split('.')[0]; // 获取当前文件名（不含后缀）
+        const navItems = document.querySelectorAll('.nav-item');
+
+        navItems.forEach(item => {
+            const tab = item.getAttribute('onclick')?.match(/'(.+?)'/)?.[1];
+
+            if (tab === currentPage) {
+                item.classList.add('active');
+            }
+
+            item.addEventListener('click', () => {
+                navItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+    });
+</script>
+</body>
+</html>

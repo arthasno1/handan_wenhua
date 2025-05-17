@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>图4-26 《燕赵冀》APP数字文创工坊界面设计图</title>
+    <style>
+      .bottom-nav {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-around;
+        padding: 10px 0;
+        background: white;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+      }
+
+      .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .nav-icon {
+        width: 24px;
+        height: 24px;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        transition: all 0.2s;
+      }
+
+      .nav-name {
+        font-size: 12px;
+        transition: all 0.2s;
+      }
+
+      .nav-item.active {
+        color: #9d2933;
+      }
+
+      .nav-item:not(.active) {
+        color: #999;
+      }
+
+      .nav-item:not(.active):hover {
+        color: #666;
+      }
+
+      .nav-item:hover .nav-icon {
+        transform: scale(1.1);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      }
+
+      body {
+        background-color: #f5f5f5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 24px;
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      .phone-container {
+        width: 100%;
+        max-width: 420px;
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 20px;
+        margin: 0 auto;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .phone-screen {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 9/16;
+        background: #f8f8f8;
+        border-radius: 30px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* 状态栏 */
+      .status-bar {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 16px 8px;
+        font-size: 14px;
+        background-color: rgba(248, 248, 248, 0.8);
+        backdrop-filter: blur(5px);
+      }
+
+      .status-bar .time {
+        font-weight: 500;
+      }
+
+      .status-bar .icons {
+        display: flex;
+        gap: 6px;
+      }
+
+      /* 顶部导航 */
+      .header {
+        padding: 10px 16px 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: white;
+        border-bottom: 1px solid #f0f0f0;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      .page-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .header-actions {
+        display: flex;
+        gap: 15px;
+        color: #666;
+        font-size: 16px;
+      }
+
+      .header-action {
+        cursor: pointer;
+        transition: all 0.2s ease;
+        padding: 4px;
+        border-radius: 4px;
+      }
+
+      .header-action:hover {
+        background-color: rgba(62, 125, 107, 0.1);
+        color: #3e7d6b;
+        transform: scale(1.1);
+      }
+
+      /* 内容区域 */
+      .content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        position: relative;
+      }
+
+      /* 创作区域 */
+      .canvas-area {
+        flex: 1;
+        padding: 16px;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f8f8f8;
+        overflow: hidden;
+      }
+
+      .canvas-container {
+        width: 300px;
+        height: 300px;
+        background-color: white;
+        border-radius: 6px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .canvas-container:hover {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      }
+
+      #canvas {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+
+      .canvas-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        background-image: url('https://img.zcool.cn/community/01e4b85d8c8b4ca801209e1f9a9c5a.jpg@1280w_1l_2o_100sh.jpg');
+      }
+
+      .canvas-element {
+        position: absolute;
+        cursor: move;
+        transition: all 0.2s ease;
+        z-index: 1;
+      }
+
+      .canvas-element:hover {
+        z-index: 2;
+        transform: scale(1.05);
+      }
+
+      .canvas-element.active {
+        outline: 2px dashed #3e7d6b;
+        z-index: 3;
+      }
+
+      .decorative-element {
+        width: 80px;
+        height: 80px;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'  viewBox='0 0 100 100' fill='%233E7D6B'%3E%3Cpath d='M50 0C22.4 0 0 22.4 0 50s22.4 50 50 50 50-22.4 50-50S77.6 0 50 0zm0 90c-22.1 0-40-17.9-40-40s17.9-40 40-40 40 17.9 40 40-17.9 40-40 40z'/%3E%3Cpath d='M50 20c-16.5 0-30 13.5-30 30s13.5 30 30 30 30-13.5 30-30-13.5-30-30-30zm0 50c-11 0-20-9-20-20s9-20 20-20 20 9 20 20-9 20-20 20z'/%3E%3C/svg%3E");
+      }
+
+      .text-element {
+        padding: 10px;
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+        background-color: rgba(255, 255, 255, 0.7);
+        border-radius: 4px;
+      }
+
+      .element-controls {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        width: 20px;
+        height: 20px;
+        background-color: #3e7d6b;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        z-index: 4;
+      }
+
+      .element-controls:hover {
+        transform: scale(1.2);
+        background-color: #c83932;
+      }
+
+      /* 工具栏 */
+      .toolbar {
+        height: 60px;
+        background-color: white;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        border-top: 1px solid #f0f0f0;
+        border-bottom: 1px solid #f0f0f0;
+        padding: 0 10px;
+      }
+
+      .tool-button {
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        color: #666;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .tool-button:hover {
+        background-color: rgba(62, 125, 107, 0.1);
+        color: #3e7d6b;
+        transform: scale(1.1);
+      }
+
+      .tool-button.active {
+        background-color: #3e7d6b;
+        color: white;
+        transform: scale(1.1);
+      }
+
+      /* 元素面板 */
+      .elements-panel {
+        height: 120px;
+        background-color: white;
+        border-top: 1px solid #f0f0f0;
+        overflow-x: auto;
+        white-space: nowrap;
+        scrollbar-width: none;
+        position: relative;
+      }
+
+      .elements-panel::-webkit-scrollbar {
+        display: none;
+      }
+
+      .elements-container {
+        display: inline-flex;
+        padding: 10px;
+        gap: 15px;
+      }
+
+      .element-item {
+        width: 80px;
+        height: 100px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .element-item:hover {
+        transform: translateY(-5px);
+      }
+
+      .element-preview {
+        width: 60px;
+        height: 60px;
+        border-radius: 6px;
+        background-color: #f5f5f5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+      }
+
+      .element-item:hover .element-preview {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      }
+
+      .element-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .element-name {
+        font-size: 12px;
+        color: #666;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%;
+      }
+
+      /* 底部操作栏 */
+      .bottom-controls {
+        height: 70px;
+        background-color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 16px;
+        border-top: 1px solid #f0f0f0;
+      }
+
+      .control-button {
+        padding: 10px 20px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .btn-secondary {
+        background-color: #f5f5f5;
+        color: #666;
+        border: 1px solid #ddd;
+      }
+
+      .btn-secondary:hover {
+        background-color: #e9e9e9;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .btn-primary {
+        background-color: #3e7d6b;
+        color: white;
+        border: 1px solid #2e5d4f;
+      }
+
+      .btn-primary:hover {
+        background-color: #2e5d4f;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      /* 模板选择区 */
+      .template-panel {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: white;
+        z-index: 20;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+        overflow: hidden;
+      }
+
+      .template-panel.active {
+        transform: translateY(0);
+      }
+
+      .panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+
+      .panel-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .close-panel {
+        width: 30px;
+        height: 30px;
+        border-radius: 15px;
+        background-color: #f5f5f5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        color: #666;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .close-panel:hover {
+        background-color: #e9e9e9;
+        transform: rotate(90deg);
+      }
+
+      .template-tabs {
+        display: flex;
+        margin-bottom: 16px;
+        border-bottom: 1px solid #f0f0f0;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+
+      .template-tabs::-webkit-scrollbar {
+        display: none;
+      }
+
+      .template-tab {
+        padding: 10px 15px;
+        font-size: 14px;
+        color: #666;
+        position: relative;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.2s ease;
+      }
+
+      .template-tab:hover {
+        color: #3e7d6b;
+      }
+
+      .template-tab.active {
+        color: #3e7d6b;
+        font-weight: 600;
+      }
+
+      .template-tab.active::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 15px;
+        right: 15px;
+        height: 3px;
+        background-color: #3e7d6b;
+        border-radius: 1.5px;
+      }
+
+      .templates-grid {
+        flex: 1;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        overflow-y: auto;
+        padding-bottom: 16px;
+      }
+
+      .template-item {
+        aspect-ratio: 1/1;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        background-color: #f5f5f5;
+        position: relative;
+        background-size: cover;
+        background-position: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .template-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+      }
+
+      .template-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 8px;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
+        color: white;
+        font-size: 12px;
+      }
+
+      /* 保存模态框 */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 30;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .modal-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 12px;
+        width: 80%;
+        max-width: 350px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .modal-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #333;
+      }
+
+      .modal-input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        margin-bottom: 15px;
+        font-size: 14px;
+      }
+
+      .modal-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+      }
+
+      .modal-button {
+        padding: 8px 15px;
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .modal-button.cancel {
+        background-color: #f5f5f5;
+        color: #666;
+      }
+
+      .modal-button.cancel:hover {
+        background-color: #e9e9e9;
+      }
+
+      .modal-button.confirm {
+        background-color: #3e7d6b;
+        color: white;
+      }
+
+      .modal-button.confirm:hover {
+        background-color: #2e5d4f;
+      }
+
+      /* 文化元素装饰 */
+      .cultural-decoration {
+        position: absolute;
+        opacity: 0.05;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .decoration-1 {
+        top: 20px;
+        right: 20px;
+        width: 100px;
+        height: 100px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'  width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%233E7D6B' d='M30 50L50 30L70 50L50 70z'/%3E%3Cpath fill='none' stroke='%233E7D6B' stroke-width='2' d='M20 50C20 33.4 33.4 20 50 20C66.6 20 80 33.4 80 50C80 66.6 66.6 80 50 80C33.4 80 20 66.6 20 50z'/%3E%3C/svg%3E");
+      }
+
+      .decoration-2 {
+        bottom: 120px;
+        left: 30px;
+        width: 120px;
+        height: 120px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'  width='120' height='120' viewBox='0 0 120 120'%3E%3Cpath fill='%233E7D6B' d='M20 50L40 30L60 50L40 70zM60 50L80 30L100 50L80 70z'/%3E%3Cpath fill='none' stroke='%233E7D6B' stroke-width='2' d='M10 60C10 32.4 32.4 10 60 10C87.6 10 110 32.4 110 60C110 87.6 87.6 110 60 110C32.4 110 10 87.6 10 60z'/%3E%3C/svg%3E");
+      }
+
+      /* 文化滤镜预览 */
+      .filter-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        mix-blend-mode: multiply;
+        opacity: 0.1;
+        pointer-events: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'  width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%233E7D6B' d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z'%3E%3C/path%3E%3C/svg%3E");
+      }
+
+      /* 辅助网格 */
+      .grid-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+        background-size: 20px 20px;
+        pointer-events: none;
+        opacity: 0.5;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="phone-container">
+      <div class="phone-screen">
+        <!-- 状态栏 -->
+        <div class="status-bar">
+          <div class="time">9:41</div>
+          <div class="icons">
+            <span>📶</span>
+            <span>🔋</span>
+          </div>
+        </div>
+
+        <!-- 顶部导航 -->
+        <div class="header">
+          <div class="page-title">数字文创工坊</div>
+          <div class="header-actions">
+            <span>📂</span>
+            <span>📱</span>
+          </div>
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="content">
+          <!-- 创作区域 -->
+          <div class="canvas-area">
+            <div class="cultural-decoration decoration-1"></div>
+            <div class="cultural-decoration decoration-2"></div>
+
+            <div class="canvas-container">
+              <div class="canvas-bg"></div>
+              <div class="filter-overlay"></div>
+              <div class="grid-overlay"></div>
+
+              <!-- 可移动的元素 -->
+              <div class="canvas-element decorative-element" style="top: 30px; left: 30px">
+                <div class="element-controls">×</div>
+              </div>
+
+              <div class="canvas-element text-element" style="top: 160px; left: 60px">
+                邯郸之旅
+                <div class="element-controls">×</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 工具栏 -->
+          <div class="toolbar">
+            <div class="tool-button active">🖼️</div>
+            <div class="tool-button">🔠</div>
+            <div class="tool-button">🎨</div>
+            <div class="tool-button">👁️</div>
+            <div class="tool-button">📐</div>
+          </div>
+
+          <!-- 元素面板 -->
+          <div class="elements-panel">
+            <div class="elements-container">
+              <div class="element-item">
+                <div class="element-preview">
+                  <img src="img/青铜器.png" alt="青铜器纹样" />
+                </div>
+                <div class="element-name">青铜器纹样</div>
+              </div>
+
+              <div class="element-item">
+                <div class="element-preview">
+                  <img src="img/赵王印.png" alt="赵王印" />
+                </div>
+                <div class="element-name">赵王印</div>
+              </div>
+
+              <div class="element-item">
+                <div class="element-preview">
+                  <img src="img/瓷器.png" alt="磁州窑花纹" />
+                </div>
+                <div class="element-name">磁州窑花纹</div>
+              </div>
+
+              <div class="element-item">
+                <div class="element-preview">
+                  <img src="img/剪纸.png" alt="邯郸剪纸" />
+                </div>
+                <div class="element-name">邯郸剪纸</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 底部操作栏 -->
+          <div class="bottom-controls">
+            <div class="control-button btn-secondary">模板</div>
+            <div class="control-button btn-primary">保存作品</div>
+          </div>
+
+          <!-- 模板选择面板 (默认隐藏) -->
+          <div class="template-panel" style="display: none">
+            <div class="panel-header">
+              <div class="panel-title">选择模板</div>
+              <div class="close-panel">×</div>
+            </div>
+
+            <div class="template-tabs">
+              <div class="template-tab active">电子明信片</div>
+              <div class="template-tab">文化海报</div>
+              <div class="template-tab">个性头像</div>
+              <div class="template-tab">旅行相册</div>
+            </div>
+
+            <div class="templates-grid">
+              <div class="template-item" style="background-image: url('img/赵州桥1.jpg')">
+                <div class="template-overlay">邯郸古迹</div>
+              </div>
+
+              <div class="template-item" style="background-image: url('img/赵文化.jpg')">
+                <div class="template-overlay">赵文化</div>
+              </div>
+
+              <div class="template-item" style="background-image: url('img/瓷器.png')">
+                <div class="template-overlay">磁州窑</div>
+              </div>
+
+              <div class="template-item" style="background-image: url('img/打树花.png')">
+                <div class="template-overlay">打树花</div>
+              </div>
+
+              <div class="template-item" style="background-image: url('img/景点2.jpg')">
+                <div class="template-overlay">古城风光</div>
+              </div>
+
+              <div class="template-item" style="background-image: url('img/1.png')">
+                <div class="template-overlay">旅行记忆</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 底部导航 -->
+        <div class="bottom-nav">
+          <div class="nav-item" onclick="switchTab('首页')">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-name">首页</div>
+          </div>
+          <div class="nav-item active" onclick="switchTab('景点')">
+            <div class="nav-icon">🗿</div>
+            <div class="nav-name">分类</div>
+          </div>
+          <div class="nav-item" onclick="switchTab('文创商城')">
+            <div class="nav-icon">📱</div>
+            <div class="nav-name">商场</div>
+          </div>
+          <div class="nav-item" onclick="switchTab('行程')">
+            <div class="nav-icon">🗺️</div>
+            <div class="nav-name">购物车</div>
+          </div>
+          <div class="nav-item" onclick="switchTab('我的')">
+            <div class="nav-icon">👤</div>
+            <div class="nav-name">我的</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+    function switchTab(tab) {
+      window.location.href = tab + '.html'
+    }
+
+    // 页面加载时自动高亮当前页面对应的导航项
+    document.addEventListener('DOMContentLoaded', () => {
+      const currentPage = window.location.pathname.split('/').pop().split('.')[0] // 获取当前文件名（不含后缀）
+      const navItems = document.querySelectorAll('.nav-item')
+
+      navItems.forEach((item) => {
+        const tab = item.getAttribute('onclick')?.match(/'(.+?)'/)?.[1]
+
+        if (tab === currentPage) {
+          item.classList.add('active')
+        }
+
+        item.addEventListener('click', () => {
+          navItems.forEach((i) => i.classList.remove('active'))
+          item.classList.add('active')
+        })
+      })
+    })
+
+    // 全局变量
+    let selectedElement = null
+    let dragOffsetX = 0
+    let dragOffsetY = 0
+    let currentTool = 'image'
+
+    // 拖拽结束
+    function dragEnd(e) {
+      if (e.target.style.opacity) {
+        e.target.style.opacity = '1'
+      }
+    }
+
+    // 拖拽移动
+    function dragMove(e) {
+      e.preventDefault()
+      if (selectedElement) {
+        const canvas = document.getElementById('canvas')
+        const canvasRect = canvas.getBoundingClientRect()
+
+        // 计算相对于画布的位置
+        const newX = e.clientX - canvasRect.left - dragOffsetX
+        const newY = e.clientY - canvasRect.top - dragOffsetY
+
+        // 限制在画布范围内
+        const elementWidth = selectedElement.offsetWidth
+        const elementHeight = selectedElement.offsetHeight
+        const maxX = canvasRect.width - elementWidth
+        const maxY = canvasRect.height - elementHeight
+
+        selectedElement.style.left = Math.max(0, Math.min(maxX, newX)) + 'px'
+        selectedElement.style.top = Math.max(0, Math.min(maxY, newY)) + 'px'
+      }
+    }
+
+    // 删除元素
+    function removeElement(element) {
+      if (selectedElement === element) {
+        selectedElement = null
+      }
+      element.remove()
+    }
+
+    // 初始化函数
+    function init() {
+      // 添加拖拽事件监听
+      const canvas = document.getElementById('canvas')
+      canvas.addEventListener('dragover', dragMove)
+      canvas.addEventListener('drop', dragEnd)
+      canvas.addEventListener('dragend', dragEnd)
+
+      // 点击空白处取消选择
+      canvas.addEventListener('click', function (e) {
+        if (e.target === canvas) {
+          if (selectedElement) {
+            selectedElement.classList.remove('active')
+            selectedElement = null
+          }
+        }
+      })
+
+      // 添加键盘事件监听
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Delete' && selectedElement) {
+          removeElement(selectedElement)
+        }
+
+        // 方向键微调位置
+        if (selectedElement) {
+          const step = e.shiftKey ? 10 : 1
+          const currentX = parseInt(selectedElement.style.left) || 0
+          const currentY = parseInt(selectedElement.style.top) || 0
+
+          switch (e.key) {
+            case 'ArrowUp':
+              selectedElement.style.top = currentY - step + 'px'
+              break
+            case 'ArrowDown':
+              selectedElement.style.top = currentY + step + 'px'
+              break
+            case 'ArrowLeft':
+              selectedElement.style.left = currentX - step + 'px'
+              break
+            case 'ArrowRight':
+              selectedElement.style.left = currentX + step + 'px'
+              break
+          }
+        }
+      })
+    }
+
+    // 页面加载完成后初始化
+    window.onload = init
+  </script>
+</html>

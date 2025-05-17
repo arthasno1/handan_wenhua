@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>图4-12 《燕赵冀》APP景点详情界面设计图</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      }
+
+      body {
+        background-color: #f5f5f5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+
+      .phone-container {
+        width: 100%;
+        max-width: 420px;
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 20px;
+        margin: 0 auto;
+      }
+
+      .phone-screen {
+        position: relative;
+        width: 100%;
+
+        background: #ffffff;
+        border-radius: 30px;
+        overflow: hidden;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      /* 状态栏 */
+      .status-bar {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 16px 8px;
+        font-size: 14px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        color: white;
+      }
+
+      .status-bar .time {
+        font-weight: 500;
+      }
+
+      .status-bar .icons {
+        display: flex;
+        gap: 6px;
+      }
+
+      /* 顶部大图和返回按钮 */
+      .header-image {
+        position: relative;
+        height: 240px;
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 18px;
+        font-weight: 500;
+      }
+
+      .back-button {
+        position: absolute;
+        top: 45px;
+        left: 16px;
+        width: 36px;
+        height: 36px;
+        background-color: rgba(0, 0, 0, 0.3);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 20px;
+        z-index: 100;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .back-button:hover {
+        background-color: rgba(0, 0, 0, 0.5);
+        transform: scale(1.1);
+      }
+
+      .image-controls {
+        position: absolute;
+        top: 45px;
+        right: 16px;
+        display: flex;
+        gap: 10px;
+      }
+
+      .image-control-btn {
+        width: 36px;
+        height: 36px;
+        background-color: rgba(0, 0, 0, 0.3);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .image-control-btn:hover {
+        background-color: rgba(0, 0, 0, 0.5);
+        transform: scale(1.1);
+      }
+
+      .image-counter {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        font-size: 12px;
+        padding: 4px 8px;
+        border-radius: 10px;
+      }
+
+      /* 基本信息区 */
+      .info-section {
+        padding: 16px;
+        border-bottom: 10px solid #f5f5f5;
+      }
+
+      .spot-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 8px;
+      }
+
+      .spot-rating {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .stars {
+        display: flex;
+        margin-right: 6px;
+      }
+
+      .star {
+        color: #f2c94c;
+        font-size: 14px;
+        margin-right: 2px;
+      }
+
+      .rating-score {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .price {
+        position: absolute;
+        right: 16px;
+        top: 250px;
+        color: #9d2933;
+        font-weight: 600;
+        font-size: 16px;
+      }
+
+      .info-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: #666;
+      }
+
+      .info-icon {
+        margin-right: 8px;
+        font-size: 16px;
+        width: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* 选项卡 */
+      .tabs-container {
+        display: flex;
+        border-bottom: 1px solid #eee;
+        position: sticky;
+        top: 0;
+        background: white;
+        z-index: 10;
+      }
+
+      .tab {
+        flex: 1;
+        padding: 14px 0;
+        text-align: center;
+        font-size: 14px;
+        color: #666;
+        position: relative;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .tab:hover {
+        color: #3e7d6b;
+      }
+
+      .tab.active {
+        color: #3e7d6b;
+        font-weight: 600;
+      }
+
+      .tab.active::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 25%;
+        width: 50%;
+        height: 3px;
+        background-color: #3e7d6b;
+        border-radius: 3px;
+        animation: tabUnderline 0.3s ease-out;
+      }
+
+      @keyframes tabUnderline {
+        from {
+          transform: scaleX(0);
+          opacity: 0;
+        }
+        to {
+          transform: scaleX(1);
+          opacity: 1;
+        }
+      }
+
+      /* 内容区域 */
+      .content {
+        height: calc(100% - 450px);
+        overflow-y: auto;
+      }
+
+      .tab-content {
+        padding: 16px;
+        display: none;
+        animation: fadeIn 0.5s ease-out;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .section-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+      }
+
+      .spot-desc {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 16px;
+      }
+
+      /* 设施服务 */
+      .facilities {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+
+      .facility-item {
+        display: flex;
+        align-items: center;
+        background: #f5f5f5;
+        padding: 6px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        color: #666;
+        transition: all 0.2s;
+      }
+
+      .facility-item:hover {
+        background: #e0e0e0;
+        transform: translateY(-2px);
+      }
+
+      .facility-icon {
+        margin-right: 4px;
+        color: #3e7d6b;
+      }
+
+      /* 游览贴士 */
+      .tips-list {
+        margin-bottom: 16px;
+      }
+
+      .tip-item {
+        display: flex;
+        margin-bottom: 10px;
+        font-size: 14px;
+        color: #666;
+        line-height: 1.5;
+        transition: all 0.2s;
+      }
+
+      .tip-item:hover {
+        transform: translateX(5px);
+      }
+
+      .tip-icon {
+        margin-right: 8px;
+        color: #f2c94c;
+        flex-shrink: 0;
+      }
+
+      /* 底部按钮区 */
+      .bottom-actions {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 16px;
+        background: white;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 10px;
+      }
+
+      .action-btn {
+        display: flex;
+        align-items: center;
+        padding: 8px 14px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .btn-icon {
+        margin-right: 5px;
+      }
+
+      .btn-primary {
+        background: #3e7d6b;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #2e5d4b;
+      }
+
+      .btn-secondary {
+        background: #4a90e2;
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background: #3a7bc8;
+      }
+
+      .btn-tertiary {
+        background: #60997b;
+        color: white;
+      }
+
+      .btn-tertiary:hover {
+        background: #4f7f64;
+      }
+
+      /* 滚动条样式 */
+      .content::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .content::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+
+      .content::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 3px;
+      }
+
+      .content::-webkit-scrollbar-thumb:hover {
+        background: #999;
+      }
+
+      /* 图片轮播指示器 */
+      .image-indicators {
+        position: absolute;
+        bottom: 20px;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        z-index: 10;
+      }
+
+      .indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .indicator.active {
+        background-color: white;
+        transform: scale(1.2);
+      }
+
+      /* 加载动画 */
+      @keyframes pulse {
+        0% {
+          opacity: 0.5;
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0.5;
+        }
+      }
+
+      .loading {
+        animation: pulse 1.5s infinite;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="phone-container">
+      <div class="phone-screen">
+        <!-- 状态栏 -->
+        <div class="status-bar">
+          <div class="time" id="current-time">9:41</div>
+          <div class="icons">
+            <span>📶</span>
+            <span>🔋</span>
+          </div>
+        </div>
+
+        <!-- 顶部大图和返回按钮 -->
+        <div class="header-image" style="background-image: url('img/赵州桥1.jpg')">
+          <div class="back-button" onclick="switchTab('景点')">←</div>
+          <div class="image-controls">
+            <div class="image-control-btn" onclick="switchTab('景点2赵州桥实景')">📷</div>
+            <div class="image-control-btn" onclick="showMoreOptions()">⋮</div>
+          </div>
+          <div class="image-counter">1/5</div>
+          <div class="image-indicators">
+            <div class="indicator active"></div>
+            <div class="indicator" onclick="changeImage(2)"></div>
+            <div class="indicator" onclick="changeImage(3)"></div>
+            <div class="indicator" onclick="changeImage(4)"></div>
+            <div class="indicator" onclick="changeImage(5)"></div>
+          </div>
+        </div>
+
+        <!-- 基本信息区 -->
+        <div class="info-section">
+          <div class="spot-title">赵州桥</div>
+          <div class="price">60元/人</div>
+          <div class="spot-rating">
+            <div class="stars">
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+            </div>
+            <span class="rating-score">4.9</span>
+          </div>
+          <div class="info-item">
+            <span class="info-icon">🕒</span>
+            <span>开放时间：8:00-18:00（16:30停止入场）</span>
+          </div>
+          <div class="info-item">
+            <span class="info-icon">📍</span>
+            <span>位置：石家庄市赵县赵州桥镇</span>
+          </div>
+        </div>
+
+        <!-- 选项卡 -->
+        <div class="tabs-container">
+          <div class="tab active">景点介绍</div>
+          <div class="tab">交通指南</div>
+          <div class="tab">游览攻略</div>
+          <div class="tab">用户点评</div>
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="content">
+          <!-- 景点介绍 -->
+          <div class="tab-content active" id="intro-tab">
+            <div class="spot-desc">赵州桥又名安济桥，位于河北省石家庄市赵县城南，是世界上现存最早、保存最完整的敞肩式石拱桥，被誉为"中国古代桥梁建筑史上的里程碑"。建于隋朝（公元595-605年），由著名匠师李春设计建造，至今已有1400多年历史。</div>
+
+            <div class="section-title">设施服务</div>
+            <div class="facilities">
+              <div class="facility-item">
+                <span class="facility-icon">🅿️</span>
+                <span>停车场</span>
+              </div>
+              <div class="facility-item">
+                <span class="facility-icon">🚻</span>
+                <span>卫生间</span>
+              </div>
+              <div class="facility-item">
+                <span class="facility-icon">🏪</span>
+                <span>商店</span>
+              </div>
+              <div class="facility-item">
+                <span class="facility-icon">☕</span>
+                <span>休息处</span>
+              </div>
+              <div class="facility-item">
+                <span class="facility-icon">♿</span>
+                <span>无障碍设施</span>
+              </div>
+            </div>
+
+            <div class="section-title">游览贴士</div>
+            <div class="tips-list">
+              <div class="tip-item">
+                <span class="tip-icon">📌</span>
+                <span>参观建议2-3小时，桥下河岸也值得一看，可以更好地欣赏桥体结构</span>
+              </div>
+              <div class="tip-item">
+                <span class="tip-icon">📌</span>
+                <span>夏季请做好防晒准备，桥面上遮阳设施较少</span>
+              </div>
+              <div class="tip-item">
+                <span class="tip-icon">📌</span>
+                <span>爱护文物，请勿在桥体上刻画或触摸石刻</span>
+              </div>
+            </div>
+
+            <div class="section-title">文化解读</div>
+            <div class="spot-desc">
+              赵州桥以其精湛的工艺和科学的设计闻名于世。其设计采用了"敞肩式单孔石拱"结构，拱下还有两个小拱（空腹拱），这种设计不仅减轻了桥身重量，还有利于泄洪，体现了古代匠师的智慧。桥身石块间采用了榫卯结构，不用一钉一铆，却能千年屹立不倒。赵州桥被誉为世界桥梁史上的"四大发明"之一，代表了中国古代建筑的最高水平。
+            </div>
+          </div>
+
+          <!-- 交通指南 -->
+          <div class="tab-content" id="transport-tab">
+            <div class="section-title">公共交通</div>
+            <div class="spot-desc">从石家庄市区可乘坐以下交通工具前往赵州桥：</div>
+            <div class="tips-list">
+              <div class="tip-item">
+                <span class="tip-icon">🚌</span>
+                <span>公交：从石家庄火车站乘坐35路公交车至赵县汽车站，换乘赵县1路公交车至赵州桥站下车</span>
+              </div>
+              <div class="tip-item">
+                <span class="tip-icon">🚗</span>
+                <span>自驾：沿G308国道行驶约50公里，约1小时车程</span>
+              </div>
+              <div class="tip-item">
+                <span class="tip-icon">🚕</span>
+                <span>出租车：从石家庄市区打车约150元</span>
+              </div>
+            </div>
+
+            <div class="section-title">停车场信息</div>
+            <div class="spot-desc">景区设有大型停车场，收费标准为：</div>
+            <div class="tips-list">
+              <div class="tip-item">
+                <span class="tip-icon">🅿️</span>
+                <span>小型车：10元/次</span>
+              </div>
+              <div class="tip-item">
+                <span class="tip-icon">🅿️</span>
+                <span>大型车：20元/次</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 游览攻略 -->
+          <div class="tab-content" id="guide-tab">
+            <div class="section-title">最佳游览时间</div>
+            <div class="spot-desc">春季(3-5月)和秋季(9-11月)是最佳游览季节，气候宜人，风景优美。夏季炎热，建议早晚游览；冬季寒冷但游客较少。</div>
+
+            <div class="section-title">推荐游览路线</div>
+            <div class="tips-list">
+              <div class="tip-item">
+                <span class="tip-icon">1</span>
+                <span>景区入口 → 赵州桥博物馆(了解桥梁历史) → 赵州桥本体 → 桥下河岸步道 → 景区出口</span>
+              </div>
+            </div>
+
+            <div class="section-title">周边景点</div>
+            <div class="facilities">
+              <div class="facility-item">
+                <span class="facility-icon">🏯</span>
+                <span>柏林禅寺</span>
+              </div>
+              <div class="facility-item">
+                <span class="facility-icon">🏛️</span>
+                <span>赵州桥博物馆</span>
+              </div>
+              <div class="facility-item">
+                <span class="facility-icon">🏞️</span>
+                <span>赵州桥公园</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 用户点评 -->
+          <div class="tab-content" id="reviews-tab">
+            <div class="section-title">游客评价 (4.9/5)</div>
+            <div class="tips-list">
+              <div class="tip-item">
+                <span class="tip-icon">👩</span>
+                <span>
+                  <strong>张女士</strong> ★★★★★<br />
+                  中国古代建筑的杰作，1400多年的历史令人震撼！讲解员讲解得很详细，了解了这座桥背后的故事。
+                </span>
+              </div>
+              <div class="tip-item">
+                <span class="tip-icon">👨</span>
+                <span>
+                  <strong>李先生</strong> ★★★★☆<br />
+                  桥体保存完好，但景区商业化有点严重，周边商店太多影响观感。建议直接参观桥体。
+                </span>
+              </div>
+              <div class="tip-item">
+                <span class="tip-icon">👧</span>
+                <span>
+                  <strong>王同学</strong> ★★★★★<br />
+                  课本上的赵州桥终于亲眼见到了！比想象中还要壮观，特别是桥下的结构设计太精巧了。
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 底部按钮区 -->
+        <div class="bottom-actions">
+          <div class="action-buttons">
+            <div class="action-btn btn-secondary" onclick="startAudioGuide()">
+              <span class="btn-icon">🔊</span>
+              <span>语音导览</span>
+            </div>
+            <div class="action-btn btn-tertiary" onclick="startARGuidance()">
+              <span class="btn-icon">📱</span>
+              <span>AR导览</span>
+            </div>
+          </div>
+          <div class="action-btn btn-primary" onclick="bookTicket()">预订门票</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // 更新时间
+      function updateTime() {
+        const now = new Date()
+        const hours = now.getHours().toString().padStart(2, '0')
+        const minutes = now.getMinutes().toString().padStart(2, '0')
+        document.getElementById('current-time').textContent = `${hours}:${minutes}`
+      }
+
+      setInterval(updateTime, 1000)
+      updateTime()
+
+      function showMoreOptions() {}
+
+      // 切换图片
+      function changeImage(index) {
+        const indicators = document.querySelectorAll('.indicator')
+        indicators.forEach((ind) => ind.classList.remove('active'))
+        indicators[index - 1].classList.add('active')
+
+        // 更新计数器
+        document.querySelector('.image-counter').textContent = `${index}/5`
+
+        // 实际应用中这里会更换主图
+        const images = ['img/赵州桥1.jpg', 'img/赵州桥2.jpg', 'img/赵州桥3.jpg', 'img/赵州桥4.jpg', 'img/赵州桥5.jpg']
+        document.querySelector('.header-image').style.backgroundImage = `url('${images[index - 1]}')`
+      }
+
+      function switchTab(tab) {
+        window.location.href = tab + '.html'
+      }
+
+      // 页面加载时自动高亮当前页面对应的导航项
+      document.addEventListener('DOMContentLoaded', () => {
+        const currentPage = window.location.pathname.split('/').pop().split('.')[0] // 获取当前文件名（不含后缀）
+        const navItems = document.querySelectorAll('.nav-item')
+
+        navItems.forEach((item) => {
+          const tab = item.getAttribute('onclick')?.match(/'(.+?)'/)?.[1]
+
+          if (tab === currentPage) {
+            item.classList.add('active')
+          }
+
+          item.addEventListener('click', () => {
+            navItems.forEach((i) => i.classList.remove('active'))
+            item.classList.add('active')
+          })
+        })
+      })
+
+      // 底部按钮功能
+      function startAudioGuide() {}
+
+      function startARGuidance() {}
+
+      function bookTicket() {}
+
+      // 模拟加载效果
+      window.addEventListener('load', function () {
+        setTimeout(() => {
+          document.querySelectorAll('.tab-content').forEach((content) => {
+            content.style.opacity = 1
+          })
+        }, 300)
+      })
+    </script>
+  </body>
+</html>
